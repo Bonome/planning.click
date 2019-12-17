@@ -3,9 +3,9 @@
     export let firstDayOfTheWeek;
     export let days;
     export let disabledDays;
+    let weeks = Array(52).fill(0).map((e,i)=>i+1);
     import TeamWeek from './TeamWeek.html';
 </script>
-<TeamWeek {users} {firstDayOfTheWeek} {days} {disabledDays}></TeamWeek>
-<TeamWeek {users} {firstDayOfTheWeek} {days} {disabledDays}></TeamWeek>
-<TeamWeek {users} {firstDayOfTheWeek} {days} {disabledDays}></TeamWeek>
-<TeamWeek {users} {firstDayOfTheWeek} {days} {disabledDays}></TeamWeek>
+{#each weeks as weekNumber, i}
+<TeamWeek {users} {firstDayOfTheWeek} {days} {disabledDays} {weekNumber}></TeamWeek>
+{/each}
