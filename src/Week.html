@@ -1,30 +1,57 @@
 <script>
     export let user;
-    let firstDayOfTheWeek = 'mo';
-    let days = ['mo', 'tu', 'we', 'th', 'fr', 'sa', 'su'];
-    let disabledDays = ['sa', 'su'];
+    export let firstDayOfTheWeek;
+    export let days;
+    export let disabledDays;
     let disabledDaysNumber = [];
+    let onCall = [];
     
     let shift = days.indexOf(firstDayOfTheWeek);
-        if(shift < 0) {
-            shift = 0;
+    if(shift < 0) {
+        shift = 0;
+    }
+    for (let _j = 0; _j < days.length; _j++) {
+        let day = days[_j];
+        let idxDayNumber = _j - shift;
+        if (idxDayNumber < 0) {
+            idxDayNumber = days.length + 1 + idxDayNumber;
         }
-        for (let _j = 0; _j < days.length; _j++) {
-            let day = days[_j];
-            let idxDayNumber = _j - shift;
-            if (idxDayNumber < 0) {
-                idxDayNumber = days.length + 1 + idxDayNumber;
-            }
-            if (disabledDays.indexOf(day) >= 0) {
-                disabledDaysNumber[idxDayNumber] = true;
-            } else {
-                disabledDaysNumber[idxDayNumber] = false;
-            }
+        if (disabledDays.indexOf(day) >= 0) {
+            disabledDaysNumber[idxDayNumber] = true;
+        } else {
+            disabledDaysNumber[idxDayNumber] = false;
         }
+    }
+
+    const callClick = dayIndex => () => {
+        if(onCall[dayIndex] == null) {
+            onCall[dayIndex] = true;
+        }else{
+            onCall[dayIndex] = null;
+        }
+    };
 </script>
 
+<div class="week">
+    <span class="cell week-row-header">{user}</span>
+    {#each days as day, i}
+    <span 
+        on:click={callClick(i)}
+        class:onCall="{onCall[i]}"
+        class:disabled="{disabledDaysNumber[i]}"
+        class="cell day">
+    </span>
+    {/each}
+</div>
+
 <style>
-    @import "./styles_variables.less";
+    /*@import "./styles_variables.less";*/
+    .week-row-header {
+        vertical-align: top;
+        line-height: 25px;
+        display: inline-block;
+        width: 100px;
+    }
     .day {
         margin: 4px;
         background-color: palegoldenrod;
@@ -35,17 +62,10 @@
     }
     .cell {
     }
+    .onCall {
+        background-color: indianred;
+    }
     .disabled {
         background-color: lightsteelblue;
     }
 </style>
-<div class="week">
-    <span class="cell week-row-header">{user}</span>
-    <span class="cell day {disabledDaysNumber[0]?'disabled': ''}">&nbsp;</span>
-    <span class="cell day {disabledDaysNumber[1]?'disabled': ''}">&nbsp;</span>
-    <span class="cell day {disabledDaysNumber[2]?'disabled': ''}">&nbsp;</span>
-    <span class="cell day {disabledDaysNumber[3]?'disabled': ''}">&nbsp;</span>
-    <span class="cell day {disabledDaysNumber[4]?'disabled': ''}">&nbsp;</span>
-    <span class="cell day {disabledDaysNumber[5]?'disabled': ''}">&nbsp;</span>
-    <span class="cell day {disabledDaysNumber[6]?'disabled': ''}">&nbsp;</span>
-</div>

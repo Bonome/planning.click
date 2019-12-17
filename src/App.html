@@ -1,9 +1,14 @@
 <script>
     import { conf } from './conf.js';
-    import Week from './Week.html';
     import Month from './Month.html';
+    
+    let firstDayOfTheWeek = 'mo';
+    let days = ['mo', 'tu', 'we', 'th', 'fr', 'sa', 'su'];
+    let disabledDays = ['sa', 'su'];
 </script>
-<Month users='{conf.users}'></Month>
+
+<Month users='{conf.users}' {firstDayOfTheWeek} {days} {disabledDays}></Month>
+
 <style>
     main {
             text-align: center;

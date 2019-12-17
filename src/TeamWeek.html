@@ -1,9 +1,32 @@
 <script>
     export let users;
+    export let firstDayOfTheWeek;
+    export let days;
+    export let disabledDays;
+    
     import Week from './Week.html';
 </script>
 <div>
+    <div class="week">
+        <span class="cell week-row-header"></span>
+        {#each days as day, i}
+        <span class="cell day">{day}</span>
+        {/each}
+    </div>
     {#each users as user, i}
-    <Week user='{user}'></Week>
+    <Week {user} {firstDayOfTheWeek} {days} {disabledDays}></Week>
     {/each}
 </div>
+
+<style>
+    .week-row-header {
+        display: inline-block;
+        width: 100px;
+    }
+    .day {
+        margin: 4px;
+        height: 20px;
+        width: 20px;
+        display: inline-block;
+    }
+</style>
