@@ -1,0 +1,9 @@
+<script>
+    export let users;
+    import Week from './Week.html';
+</script>
+<div>
+    {#each users as user, i}
+    <Week user='{user}'></Week>
+    {/each}
+</div>
