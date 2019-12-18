@@ -1,27 +1,9 @@
 <script>
     export let user;
-    export let firstDayOfTheWeek;
-    export let days;
-    export let disabledDays;
-    let disabledDaysNumber = [];
+    export let displayDays;
     let onCall = [];
     
-    let shift = days.indexOf(firstDayOfTheWeek);
-    if(shift < 0) {
-        shift = 0;
-    }
-    for (let _j = 0; _j < days.length; _j++) {
-        let day = days[_j];
-        let idxDayNumber = _j - shift;
-        if (idxDayNumber < 0) {
-            idxDayNumber = days.length + 1 + idxDayNumber;
-        }
-        if (disabledDays.indexOf(day) >= 0) {
-            disabledDaysNumber[idxDayNumber] = true;
-        } else {
-            disabledDaysNumber[idxDayNumber] = false;
-        }
-    }
+
 
     const callClick = dayIndex => () => {
         if(onCall[dayIndex] == null) {
@@ -34,12 +16,12 @@
 
 <div class="week">
     <span class="cell week-row-header">{user}</span>
-    {#each days as day, i}
+    {#each displayDays as day, i}
     <span 
         on:click={callClick(i)}
         class:onCall="{onCall[i]}"
-        class:disabled="{disabledDaysNumber[i]}"
-        class="cell day">
+        class:disabled="{day.disabled}"
+        class="cell day">{day.index}
     </span>
     {/each}
 </div>

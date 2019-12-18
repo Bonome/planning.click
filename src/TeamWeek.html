@@ -1,22 +1,42 @@
 <script>
+    import { startOfWeek } from 'date-fns';
+    
+    import Week from './Week.html';
+    
     export let users;
     export let firstDayOfTheWeek;
     export let days;
     export let disabledDays;
     export let weekNumber;
+    let displayDays = [];
     
-    import Week from './Week.html';
+    let shift = days.indexOf(firstDayOfTheWeek);
+    if(shift < 0) {
+        shift = 0;
+    }
+    for (let _j = 0; _j < days.length; _j++) {
+        let day = days[_j];
+        let idxDayNumber = _j - shift;
+        if (idxDayNumber < 0) {
+            idxDayNumber = days.length  + idxDayNumber;
+        }
+        if (disabledDays.indexOf(day) >= 0) {
+            displayDays[idxDayNumber] = {disabled :true, index: _j};
+        } else {
+            displayDays[idxDayNumber] = {disabled :false, index: _j};
+        }
+    }
 </script>
 <div class='team-week'>
     <div class="week">
     <span class="bold">W{weekNumber}</span>
         <span class="cell week-row-header">01-07/01</span>
-        {#each days as day, i}
-        <span class="cell day">{day}</span>
+        {#each displayDays as day, i}
+        <span class="cell day">{day.index}</span>
         {/each}
     </div>
     {#each users as user, i}
-    <Week {user} {firstDayOfTheWeek} {days} {disabledDays}></Week>
+    <Week {user} {displayDays}></Week>
     {/each}
 </div>
 

@@ -2,9 +2,10 @@
     import { conf } from './conf.js';
     import Month from './Month.html';
     
-    let firstDayOfTheWeek = 'mo';
-    let days = ['mo', 'tu', 'we', 'th', 'fr', 'sa', 'su'];
-    let disabledDays = ['sa', 'su'];
+    // su, mo, tu, we, th, fr, sa
+    let days = [0, 1, 2, 3, 4, 5, 6];
+    let firstDayOfTheWeek = 1;
+    let disabledDays = [0, 6];
 </script>
 
 <Month users='{conf.users}' {firstDayOfTheWeek} {days} {disabledDays}></Month>
