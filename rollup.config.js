@@ -3,6 +3,7 @@ import resolve from '@rollup/plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
 import livereload from 'rollup-plugin-livereload';
 import { terser } from 'rollup-plugin-terser';
+import json from '@rollup/plugin-json';
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -12,8 +13,26 @@ export default {
 		sourcemap: true,
 		format: 'iife',
 		name: 'app',
+//		dir: 'public/build/'
 		file: 'public/build/bundle.js'
 	},
+        
+        moduleContext: (id) => {
+            const thisAsWindowForModules = [
+                'node_modules/intl-messageformat/lib/core.js',
+                'node_modules/intl-messageformat/lib/compiler.js',
+                'node_modules/intl-messageformat/lib/formatters.js',
+                'node_modules/intl-format-cache/lib/index.js',
+                'node_modules/intl-messageformat-parser/lib/normalize.js',
+                'node_modules/intl-messageformat-parser/lib/parser.js',
+                'node_modules/intl-messageformat-parser/lib/skeleton.js,',
+                'node_modules/intl-messageformat-parser/lib/skeleton.js',
+            ];
+
+            if (thisAsWindowForModules.some(id_ => id.trimRight().endsWith(id_))) {
+                return 'window';
+            }
+        },
 	plugins: [
 		svelte({
 			// enable run-time checks when not in production
@@ -35,6 +54,10 @@ export default {
 			dedupe: importee => importee === 'svelte' || importee.startsWith('svelte/')
 		}),
 		commonjs(),
+                json({
+                    namedExports: false,
+                    compact:production
+                }),
 
 		// In dev mode, call `npm run start` once
 		// the bundle has been generated

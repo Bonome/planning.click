@@ -1,12 +1,27 @@
 <script>
+    import { register, init, _, addMessages} from 'svelte-i18n';
+
     import { conf } from './conf.js';
     import Month from './Month.html';
-    
+
     // su, mo, tu, we, th, fr, sa
     let days = [0, 1, 2, 3, 4, 5, 6];
     let firstDayOfTheWeek = 1;
     let disabledDays = [0, 6];
+
+//    register('en', () => import('../langs/en.json'));
+
+    import en from '../langs/en.json';
+    addMessages('en', en);
+    init({
+	fallbackLocale: 'en',
+	initialLocale: {
+		navigator: true,
+	},
+    });
+
 </script>
+<h1>{$_('title')}</h1>
 
 <Month users='{conf.users}' {firstDayOfTheWeek} {days} {disabledDays}></Month>
 
