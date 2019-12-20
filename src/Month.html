@@ -1,11 +1,16 @@
 <script>
+    import { startOfWeek, subWeeks, addWeeks } from 'date-fns'
+    
+    import TeamWeek from './TeamWeek.html';
+    
     export let users;
     export let firstDayOfTheWeek;
     export let days;
     export let disabledDays;
-    let weeks = Array(52).fill(0).map((e,i)=>i+1);
-    import TeamWeek from './TeamWeek.html';
+    let weeks = Array(12).fill(0).map((e,i)=>i+1);
+    
+    let penultimateWeek = subWeeks(startOfWeek(new Date(), { weekStartsOn: firstDayOfTheWeek }), 1);
 </script>
 {#each weeks as weekNumber, i}
-<TeamWeek {users} {firstDayOfTheWeek} {days} {disabledDays} {weekNumber}></TeamWeek>
+<TeamWeek {users} {firstDayOfTheWeek} {days} {disabledDays} date='{addWeeks(penultimateWeek, i)}'></TeamWeek>
 {/each}
