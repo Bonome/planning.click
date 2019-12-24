@@ -11,7 +11,7 @@
     
     let data = [];
     onMount(async function() {
-        const response = await fetch("planning/tp.json");
+        const response = await fetch("planning/tp.json", {	method: 'get'});
         const json = await response.json();
         data = json;
     });
