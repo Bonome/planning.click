@@ -9,15 +9,17 @@ export function get(req, res, next) {
     db.open((err,db) => {
         db.collection('plannings', (err, plannings) => {
             plannings.findOne({slug: slug}, (err, planning) => {
-                if(err) {
-                    res.writeHead(404, {
-                        'Content-Type': 'application/json'
-                    });
-
-                    res.end(JSON.stringify({
-                        message: `Not found`
-                    }));
-                }
+                console.log(planning);
+                console.log(err);
+//                if(err) {
+//                    res.writeHead(404, {
+//                        'Content-Type': 'application/json'
+//                    });
+//
+//                    res.end(JSON.stringify({
+//                        message: `Not found`
+//                    }));
+//                }
                 res.writeHead(200, {
                     'Content-Type': 'application/json'
                 });

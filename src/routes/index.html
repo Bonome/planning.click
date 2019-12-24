@@ -1,4 +1,6 @@
 <script>
+    import { onMount } from "svelte";
+    
     import { conf } from '../conf.js';
     import Month from '../components/Month.html';
 
@@ -7,11 +9,12 @@
     let firstDayOfTheWeek = 1;
     let disabledDays = [0, 6];
     
-//    async function load({ slug }) {
-//        const res = await this.fetch(`planning/${params.slug}.json`);
-//        const data = await res.json();
-//    };
-//    preload('tenderspage');
+    let data = [];
+    onMount(async function() {
+        const response = await fetch("planning/tp.json");
+        const json = await response.json();
+        data = json;
+    });
 
 </script>
 <style>
