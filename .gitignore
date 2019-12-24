@@ -1,5 +1,7 @@
-/node_modules/
-/public/build/
-
 .DS_Store
-/nbproject
+/node_modules/
+/src/node_modules/@sapper/
+yarn-error.log
+/cypress/screenshots/
+/__sapper__/
+/tags

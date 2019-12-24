@@ -1,25 +1,26 @@
 <script>
+    import cloneDeep from 'lodash/cloneDeep';
+    
     export let user;
     export let displayDays;
     let onCall = [];
-    
-
+    let days = cloneDeep(displayDays);
 
     const callClick = dayIndex => () => {
-        if(onCall[dayIndex] == null) {
-            onCall[dayIndex] = true;
+        if(days[dayIndex].oncalled == null) {
+            days[dayIndex].oncalled = true;
         }else{
-            onCall[dayIndex] = null;
+            days[dayIndex].oncalled = null;
         }
     };
 </script>
 
 <div class="week">
     <span class="cell week-row-header">{user}</span>
-    {#each displayDays as day, i}
+    {#each days as day, i}
     <span 
         on:click={callClick(i)}
-        class:onCall="{onCall[i]}"
+        class:onCall="{day.oncalled}"
         class:disabled="{day.disabled}"
         class="cell day">
     </span>
