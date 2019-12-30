@@ -1,36 +1,99 @@
 <script>
     import { onMount } from "svelte";
-    
+
     import { conf } from '../conf.js';
     import Month from '../components/Month.html';
 
     // su, mo, tu, we, th, fr, sa
-    let days = [0, 1, 2, 3, 4, 5, 6];
-    let firstDayOfTheWeek = 1;
-    let disabledDays = [0, 6];
-    
+//    let days = [0, 1, 2, 3, 4, 5, 6];
+//    let firstDayOfTheWeek = 1;
+//    let disabledDays = [0, 6];
+    let days=[];
+    let firstDayOfTheWeek;
+    let disabledDays=[];
+    let users=[];
+    let slug = 'tenderspage';
+    let dataDays = [];
+
     let data = [];
-    onMount(async function() {
-        const response = await fetch("planning/tp.json", {	method: 'get'});
-        const json = await response.json();
-        data = json;
+    onMount(async function () {
+        fetch('planning/'+slug+'/days.json', {method: 'get'}).then(async (resDays) => {
+            dataDays = await resDays.json();
+            console.log(dataDays);
+            
+
+            const response = await fetch('planning/'+slug+'.json', {method: 'get'});
+            const data = await response.json();
+            users = data.users;
+            days = data.week.days;
+            firstDayOfTheWeek = data.week.dayOne;
+            disabledDays = data.week.disabled;
+        });
+        
     });
+
+
+    const initPlanning = {
+        name: 'TendersPage',
+        slug: 'tenderspage',
+        users: [{
+                name: 'Julien',
+                role: 'admin',
+                id: 1
+            }, {
+                name: 'Bruno',
+                role: 'admin',
+                id: 2
+            }, {
+                name: 'User 3',
+                role: 'user',
+                id: 3
+            }],
+        week: {
+            dayOne: 1,
+            days: [0, 1, 2, 3, 4, 5, 6],
+            disabled: [0, 6]
+        },
+        off: {
+
+        },
+        custom: {
+
+        }
+    }
+
+
+    const create = function () {
+        console.log('post');
+        let url = 'planning/tenderspage.json';
+        fetch(url, {
+            method: 'POST',
+            body: JSON.stringify(initPlanning),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(r => {
+            r.json()
+                    .then(function (result) {
+                        // The data is posted: do something with the result...
+                    })
+        }).catch(err => {
+            // POST error: do something...
+            console.log('POST error', err.message)
+        });
+    }
+
+
 
 </script>
 <style>
-    h1 {
-            color: #ff3e00;
-            text-transform: uppercase;
-            font-size: 4em;
-            font-weight: 100;
-    }
-
-    @media (min-width: 640px) {
-    }
 </style>
 
 <svelte:head>
-	<title>Planning</title>
+    <title>Planning</title>
 </svelte:head>
 
-<Month users='{conf.users}' {firstDayOfTheWeek} {days} {disabledDays}></Month>
+<!--<button on:click='{create}'>init db test tenderspage</button>-->
+{#if days.length > 0 }
+    <Month {users} {firstDayOfTheWeek} {days} {disabledDays} {dataDays} {slug}></Month>
+{/if}

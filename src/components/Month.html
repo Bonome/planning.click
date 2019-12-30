@@ -6,11 +6,13 @@
     export let users;
     export let firstDayOfTheWeek;
     export let days;
+    export let slug;
+    export let dataDays;
     export let disabledDays;
-    let weeks = Array(12).fill(0).map((e,i)=>i+1);
+    let weeks = Array(12);
     
     let penultimateWeek = subWeeks(startOfWeek(new Date(), { weekStartsOn: firstDayOfTheWeek }), 1);
 </script>
-{#each weeks as weekNumber, i}
-<TeamWeek {users} {firstDayOfTheWeek} {days} {disabledDays} date='{addWeeks(penultimateWeek, i)}'></TeamWeek>
+{#each weeks as week, i}
+<TeamWeek {users} {firstDayOfTheWeek} {days} {disabledDays} {slug} {dataDays} date='{addWeeks(penultimateWeek, i)}'></TeamWeek>
 {/each}

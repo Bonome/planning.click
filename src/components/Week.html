@@ -1,22 +1,58 @@
 <script>
+    import { onMount } from 'svelte';
+    import { getWeek, format, addDays } from 'date-fns';
     import cloneDeep from 'lodash/cloneDeep';
     
     export let user;
+    export let slug;
+    export let date;
+    export let dataDays;
     export let displayDays;
     let onCall = [];
     let days = cloneDeep(displayDays);
+    
+    for(let d = 0;d<days.length;d++) {
+        let daydate = format(addDays(date, d), "yyyyMMdd");
+        let day = dataDays.find((x) => { return (x.date === daydate && x.user == user.id)});
+        if(day != null && day.type ==1) {
+            days[d].oncalled = true;
+        }
+//        days[d].oncalled = dataDays.find((x) => (x.date === daydate && x.user === user.id)).type === 1;
+    }
 
     const callClick = dayIndex => () => {
+        let daydate = format(addDays(date, dayIndex), "yyyyMMdd");
         if(days[dayIndex].oncalled == null) {
             days[dayIndex].oncalled = true;
+            userday(daydate, 1);
         }else{
             days[dayIndex].oncalled = null;
+            userday(daydate, 0);
         }
     };
+    const userday = function (day, type) {
+        console.log('post');
+        let url = 'planning/'+slug+'/'+day+'/'+user.id+'/'+type+'.json';
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(r => {
+            r.json()
+                    .then(function (result) {
+                        // The data is posted: do something with the result...
+                    })
+        }).catch(err => {
+            // POST error: do something...
+            console.log('POST error', err.message)
+        });
+    }
+    
 </script>
 
 <div class="week">
-    <span class="cell week-row-header">{user}</span>
+    <span class="cell week-row-header">{user.name}</span>
     {#each days as day, i}
     <span 
         on:click={callClick(i)}

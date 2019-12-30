@@ -8,6 +8,8 @@
     export let days;
     export let disabledDays;
     export let date;
+    export let dataDays;
+    export let slug;
     let weekNumber = getWeek(date);
     let displayDays = [];
     
@@ -36,7 +38,7 @@
         {/each}
     </div>
     {#each users as user, i}
-    <Week {user} {displayDays}></Week>
+    <Week {user} {displayDays} {date} {slug} {dataDays}></Week>
     {/each}
 </div>
 
