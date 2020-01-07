@@ -1,3 +1,6 @@
 {
-    "title": "Planning" 
+    "title": "Planning",
+    "index":{
+        "url_access": "This new planning will be accessible at this address "
+    }
 }

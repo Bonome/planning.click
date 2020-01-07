@@ -1,47 +1,27 @@
+<script context="module">
+    export async function preload(page) {
+        console.log(page);
+        const {host} = page;
+        return {host};
+    }
+</script>
 <script>
-    import { onMount } from "svelte";
+    import { _ } from 'svelte-i18n';
+    import { goto } from '@sapper/app'
 
     import { conf } from '../conf.js';
-    import Month from '../components/Month.html';
 
-    // su, mo, tu, we, th, fr, sa
-//    let days = [0, 1, 2, 3, 4, 5, 6];
-//    let firstDayOfTheWeek = 1;
-//    let disabledDays = [0, 6];
-    let days=[];
-    let firstDayOfTheWeek;
-    let disabledDays=[];
-    let users=[];
-    let slug = 'tenderspage';
-    let dataDays = [];
-
-    let data = [];
-    onMount(async function () {
-        fetch('planning/'+slug+'/days.json', {method: 'get'}).then(async (resDays) => {
-            dataDays = await resDays.json();
-            console.log(dataDays);
-            
-
-            const response = await fetch('planning/'+slug+'.json', {method: 'get'});
-            const data = await response.json();
-            users = data.users;
-            days = data.week.days;
-            firstDayOfTheWeek = data.week.dayOne;
-            disabledDays = data.week.disabled;
-        });
-        
-    });
-
-
+    export let host;
+    let gotoHref = '';
     const initPlanning = {
-        name: 'TendersPage',
-        slug: 'tenderspage',
+        name: '',
+        slug: '',
         users: [{
-                name: 'Julien',
+                name: 'Admin 1',
                 role: 'admin',
                 id: 1
             }, {
-                name: 'Bruno',
+                name: 'User 2',
                 role: 'admin',
                 id: 2
             }, {
@@ -55,9 +35,6 @@
             disabled: [0, 6]
         },
         off: {
-
-        },
-        custom: {
 
         }
     }
@@ -93,7 +70,9 @@
     <title>Planning</title>
 </svelte:head>
 
-<!--<button on:click='{create}'>init db test tenderspage</button>-->
-{#if days.length > 0 }
-    <Month {users} {firstDayOfTheWeek} {days} {disabledDays} {dataDays} {slug}></Month>
-{/if}
+<button on:click='{create}'>Create a new planning</button>
+<input bind:value="{initPlanning.name}"/>
+<p>{$_('index.url_access')}</p>
+<p><a href="http://{host}/{initPlanning.slug=initPlanning.name.toLowerCase()}">http://{host}/{initPlanning.slug=initPlanning.name.toLowerCase()}</a></p>
+<button on:click='{goto(gotoHref)}'>Go to this planning</button>
+<input bind:value="{gotoHref}"/>
