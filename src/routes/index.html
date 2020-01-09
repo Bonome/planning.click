@@ -7,7 +7,7 @@
 </script>
 <script>
     import { _ } from 'svelte-i18n';
-    import { goto } from '@sapper/app'
+    import { goto } from '@sapper/app';
 
     import { conf } from '../conf.js';
 
@@ -50,15 +50,14 @@
                 'Content-Type': 'application/json'
             }
         }).then(r => {
-            r.json()
-                    .then(function (result) {
-                        // The data is posted: do something with the result...
-                    })
+            r.json().then((result) => {
+                // The data is posted: do something with the result...
+            });
         }).catch(err => {
             // POST error: do something...
-            console.log('POST error', err.message)
+            console.log('POST error', err.message);
         });
-    }
+    };
 
 
 

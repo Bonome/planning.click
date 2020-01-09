@@ -35,7 +35,7 @@ export function post(req, res, next) {
                 'Content-Type': 'application/json'
             });
 
-            res.end(JSON.stringify(r));
+            res.end(JSON.stringify(r.upsertedId));
 
         } catch (err) {
             console.log(err.stack);

@@ -2,7 +2,7 @@
     export async function preload(page) {
         const {slug} = page.params;
 
-        const resDays = await this.fetch('planning/'+slug+'/days.json', {method: 'get'});
+        const resDays = await this.fetch('planning/' + slug + '/days.json', {method: 'get'});
         const dataDays = await resDays.json();
 
         const response = await this.fetch('planning/' + slug + '.json', {method: 'get'});
@@ -16,6 +16,7 @@
 </script>
 <script>
     import { onMount } from "svelte";
+    import io from "socket.io-client";
 
     import { conf } from '../../conf.js';
     import Month from '../../components/Month.html';
@@ -31,6 +32,8 @@
     export let disabledDays = [];
     export let users = [];
     export let dataDays = [];
+    
+    const socket = io();
 
     const initPlanning = {
         name: 'TendersPage',
@@ -59,40 +62,25 @@
         custom: {
 
         }
-    }
+    };
+    socket.on('connect', function() {
+        socket.emit('join', slug);
+     });
 
-
-    const create = function () {
-        console.log('post');
-        let url = 'planning/tenderspage.json';
-        fetch(url, {
-            method: 'POST',
-            body: JSON.stringify(initPlanning),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }).then(r => {
-            r.json()
-                    .then(function (result) {
-                        // The data is posted: do something with the result...
-                    })
-        }).catch(err => {
-            // POST error: do something...
-            console.log('POST error', err.message)
-        });
-    }
-
-
-
+    socket.on('day', (day) => {
+        console.log('test');
+        console.log(day);
+        dataDays = [...dataDays,day];
+    });
 </script>
-<style>
-</style>
 
 <svelte:head>
     <title>Planning</title>
 </svelte:head>
 
-<!--<button on:click='{create}'>init db test tenderspage</button>-->
 {#if days.length > 0 }
 <Month {users} {firstDayOfTheWeek} {days} {disabledDays} {dataDays} {slug}></Month>
 {/if}
+
+<style>
+</style>

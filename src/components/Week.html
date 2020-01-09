@@ -1,54 +1,71 @@
 <script>
+    import io from "socket.io-client";
     import { onMount } from 'svelte';
     import { getWeek, format, addDays } from 'date-fns';
     import cloneDeep from 'lodash/cloneDeep';
-    
+
     export let user;
     export let slug;
     export let date;
     export let dataDays;
     export let displayDays;
+    const socket = io();
     let onCall = [];
     let days = cloneDeep(displayDays);
-    
-    for(let d = 0;d<days.length;d++) {
+
+    for (let d = 0; d < days.length; d++) {
         let daydate = format(addDays(date, d), "yyyyMMdd");
-        let day = dataDays.find((x) => { return (x.date === daydate && x.user == user.id)});
-        if(day != null && day.type ==1) {
+        let day = dataDays.find((x) => {
+            return (x.date === daydate && x.user == user.id)
+        });
+        if (day != null && day.type == 1) {
             days[d].oncalled = true;
         }
-//        days[d].oncalled = dataDays.find((x) => (x.date === daydate && x.user === user.id)).type === 1;
     }
 
     const callClick = dayIndex => () => {
-        let daydate = format(addDays(date, dayIndex), "yyyyMMdd");
-        if(days[dayIndex].oncalled == null) {
-            days[dayIndex].oncalled = true;
-            userday(daydate, 1);
-        }else{
-            days[dayIndex].oncalled = null;
-            userday(daydate, 0);
-        }
-    };
-    const userday = function (day, type) {
+            let daydate = format(addDays(date, dayIndex), "yyyyMMdd");
+            
+            if (days[dayIndex].oncalled == null) {
+                days[dayIndex].oncalled = true;
+                userday(days[dayIndex], daydate, 1);
+            } else {
+                days[dayIndex].oncalled = null;
+                userday(days[dayIndex], daydate, 0);
+            }
+        };
+    const userday = function (day, daydate, type) {
         console.log('post');
-        let url = 'planning/'+slug+'/'+day+'/'+user.id+'/'+type+'.json';
+        console.log(day);
+        let url = 'planning/' + slug + '/' + daydate + '/' + user.id + '/' + type + '.json';
         fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             }
         }).then(r => {
-            r.json()
-                    .then(function (result) {
-                        // The data is posted: do something with the result...
-                    })
+            r.json().then((result) => {
+                // The data is posted: do something with the result...
+                if (result != null) {
+                    day._id = result._id;
+                }
+                let event = {
+                    data: day,
+                    slug: slug
+                }
+                console.log('emit day');
+                socket.emit("day", event);
+            });
         }).catch(err => {
             // POST error: do something...
-            console.log('POST error', err.message)
+            console.log('POST error', err.message);
         });
-    }
-    
+    };
+
+//    socket.on("user joined", function(string) {
+//		console.log(string);
+//	});
+
 </script>
 
 <div class="week">

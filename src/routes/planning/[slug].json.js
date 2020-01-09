@@ -20,12 +20,11 @@ export function get(req, res, next) {
             const col = db.collection('plannings');
             let r;
 
-            // Insert multiple documents
             r = await col.findOne({slug: slug});
+            
             res.writeHead(200, {
                 'Content-Type': 'application/json'
             });
-
             res.end(JSON.stringify(r));
 
         } catch (err) {
