@@ -9,10 +9,20 @@
     export let slug;
     export let dataDays;
     export let disabledDays;
+    export let socket;
     let weeks = Array(12);
     
     let penultimateWeek = subWeeks(startOfWeek(new Date(), { weekStartsOn: firstDayOfTheWeek }), 1);
+    setTimeout(() => {
+        let count = 3;
+        penultimateWeek = subWeeks(startOfWeek(penultimateWeek, { weekStartsOn: firstDayOfTheWeek }), count);
+        weeks = weeks.concat(Array(count));
+    }, 5000);
+    setTimeout(() => {
+        let count = 3;
+        weeks = weeks.concat(Array(count));
+    }, 10000);
 </script>
 {#each weeks as week, i}
-<TeamWeek {users} {firstDayOfTheWeek} {days} {disabledDays} {slug} {dataDays} date='{addWeeks(penultimateWeek, i)}'></TeamWeek>
+<TeamWeek {users} {firstDayOfTheWeek} {days} {disabledDays} {slug} {dataDays} {socket} date='{addWeeks(penultimateWeek, i)}'></TeamWeek>
 {/each}

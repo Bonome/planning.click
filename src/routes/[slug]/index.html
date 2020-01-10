@@ -68,9 +68,12 @@
      });
 
     socket.on('day', (day) => {
-        console.log('test');
-        console.log(day);
-        dataDays = [...dataDays,day];
+        let idx = dataDays.findIndex((dday) => dday._id === day._id);
+        if(idx >= 0) {
+            dataDays[idx] = day;
+        }else{
+            dataDays[dataDays.length] = day;
+        }
     });
 </script>
 
@@ -79,7 +82,7 @@
 </svelte:head>
 
 {#if days.length > 0 }
-<Month {users} {firstDayOfTheWeek} {days} {disabledDays} {dataDays} {slug}></Month>
+<Month {users} {firstDayOfTheWeek} {days} {disabledDays} {dataDays} {slug} {socket}></Month>
 {/if}
 
 <style>

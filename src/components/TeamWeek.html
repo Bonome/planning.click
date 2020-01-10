@@ -10,7 +10,7 @@
     export let date;
     export let dataDays;
     export let slug;
-    let weekNumber = getWeek(date);
+    export let socket;
     let displayDays = [];
     
     let shift = days.indexOf(firstDayOfTheWeek);
@@ -32,13 +32,13 @@
 </script>
 <div class='team-week'>
     <div class="week">
-        <span class="cell week-row-header bold">W{weekNumber}</span>
+        <span class="cell week-row-header bold">W{getWeek(date)}</span>
         {#each displayDays as day, i}
         <span class="cell day">{format(addDays(date, i), "cccccc dd/MM")}</span>
         {/each}
     </div>
     {#each users as user, i}
-    <Week {user} {displayDays} {date} {slug} {dataDays}></Week>
+    <Week {user} {displayDays} {date} {slug} {dataDays} {socket}></Week>
     {/each}
 </div>
 

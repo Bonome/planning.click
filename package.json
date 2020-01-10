@@ -1,7 +1,9 @@
 {
   "name": "planning.click",
-  "description": "TODO",
+  "description": "planning to manage on-call duty",
   "version": "0.0.1",
+  "author": "Bonome",
+  "licence": "AGPLv3",
   "scripts": {
     "dev": "sapper dev",
     "build": "sapper build --legacy",
@@ -13,14 +15,17 @@
   },
   "dependencies": {
     "body-parser": "^1.19.0",
+    "bufferutil": "^4.0.1",
     "compression": "^1.7.1",
     "date-fns": "^2.8.1",
+    "dotenv": "^8.2.0",
     "mongodb": "^3.4.1",
     "polka": "next",
     "sirv": "^0.4.0",
     "socket.io": "^2.3.0",
     "socket.io-client": "^2.3.0",
-    "tingodb": "^0.6.1"
+    "tingodb": "^0.6.1",
+    "utf-8-validate": "^5.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
