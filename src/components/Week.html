@@ -2,6 +2,8 @@
     import { onMount } from 'svelte';
     import { getWeek, format, addDays } from 'date-fns';
     import cloneDeep from 'lodash/cloneDeep';
+    
+    import { selected_event } from '../store.js';
 
     export let user;
     export let slug;
@@ -14,6 +16,7 @@
     let defaultType = 1;//oncalled
 
     const callClick = dayIndex => () => {
+        console.log($selected_event);
             let daydate = format(addDays(date, dayIndex), "yyyyMMdd");
             let event = {slug: slug};
             
@@ -21,10 +24,10 @@
             let dataDayIndex = dataDays.findIndex((x) => x.date === daydate && x.user == user.id);
             // this day had a record
             if (dataDayIndex >= 0) {
-                if(dataDays[dataDayIndex].type == 1) {
+                if(dataDays[dataDayIndex].type == $selected_event) {
                     dataDays[dataDayIndex].type = 0;
                 }else{
-                    dataDays[dataDayIndex].type = 1;
+                    dataDays[dataDayIndex].type = $selected_event;
                 }
                 event.data = dataDays[dataDayIndex];
             }else{
@@ -32,7 +35,7 @@
                     slug: slug,
                     date: daydate,
                     user: user.id,
-                    type: defaultType
+                    type: $selected_event
                 }
             }
             socket.emit("day", event);
@@ -45,9 +48,9 @@
     {#each days as day, i}
     <span 
         on:click={callClick(i)}
-        class:onCall="{dataDays.find((x) => x.date === format(addDays(date, i), 'yyyyMMdd') && x.user == user.id && x.type == 1) != null}"
-        class:disabled="{day.disabled}"
-        class="cell day">
+        class="cell day {dataDays.find((x) => 
+                  (x.date === format(addDays(date, i), 'yyyyMMdd') && x.user == user.id)) == null?'day-evt-0':'day-evt-'+dataDays.find((x) => x.date === format(addDays(date, i), 'yyyyMMdd') && x.user == user.id).type}"
+        class:disabled="{day.disabled}">
     </span>
     {/each}
 </div>
@@ -60,20 +63,8 @@
         display: inline-block;
         width: 120px;
     }
-    .day {
-        margin: 4px;
-        background-color: palegoldenrod;
-        border-color: black;
-        height: 20px;
-        width: 70px;
-        display: inline-block;
-    }
-    .cell {
-    }
-    .onCall {
-        background-color: indianred;
-    }
+
     .disabled {
-        background-color: lightsteelblue;
+        background-color: gainsboro;
     }
 </style>

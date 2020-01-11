@@ -11,13 +11,15 @@
         let days = data.week.days;
         let firstDayOfTheWeek = data.week.dayOne;
         let disabledDays = data.week.disabled;
-        return {users, days, firstDayOfTheWeek, disabledDays, dataDays, slug};
+        let events = data.events;
+        return {users, days, firstDayOfTheWeek, disabledDays, dataDays, slug, events};
     }
 </script>
 <script>
     import { onMount } from "svelte";
     import io from "socket.io-client";
 
+    import { selected_event } from '../../store.js';
     import { conf } from '../../conf.js';
     import Month from '../../components/Month.html';
 
@@ -32,58 +34,46 @@
     export let disabledDays = [];
     export let users = [];
     export let dataDays = [];
-    
+    export let events;
+
     const socket = io();
 
-    const initPlanning = {
-        name: 'TendersPage',
-        slug: 'tenderspage',
-        users: [{
-                name: 'Julien',
-                role: 'admin',
-                id: 1
-            }, {
-                name: 'Bruno',
-                role: 'admin',
-                id: 2
-            }, {
-                name: 'User 3',
-                role: 'user',
-                id: 3
-            }],
-        week: {
-            dayOne: 1,
-            days: [0, 1, 2, 3, 4, 5, 6],
-            disabled: [0, 6]
-        },
-        off: {
-
-        },
-        custom: {
-
-        }
-    };
-    socket.on('connect', function() {
+    socket.on('connect', function () {
         socket.emit('join', slug);
-     });
+    });
 
     socket.on('day', (day) => {
         let idx = dataDays.findIndex((dday) => dday._id === day._id);
-        if(idx >= 0) {
+        if (idx >= 0) {
             dataDays[idx] = day;
-        }else{
+        } else {
             dataDays[dataDays.length] = day;
         }
     });
+
+    const defaultEventClick = event_type => () => {
+        selected_event.set(event_type);
+    };
 </script>
 
 <svelte:head>
     <title>Planning</title>
 </svelte:head>
-
+{#each events as event, i}
+<div>
+    <span 
+        on:click={defaultEventClick(event.type)}
+        class="cell day day-evt-{event.type}"
+        class:selected="{event.type === $selected_event}">
+    </span>
+</div>
+{/each}
 {#if days.length > 0 }
 <Month {users} {firstDayOfTheWeek} {days} {disabledDays} {dataDays} {slug} {socket}></Month>
 {/if}
 
 <style>
+    .selected {
+        border: 3px solid red;  
+    }
 </style>
