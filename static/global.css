@@ -29,27 +29,40 @@ code {
 	border-radius: 2px;
 }
 
+.day {
+    margin: 3px;
+    background-color: whitesmoke;
+    border-color: black;
+    height: 20px;
+    width: 70px;
+    display: inline-block;
+}
+.cell {
+}
+.day-evt-1 {
+    background-color: indianred;
+}
+.day-evt-2 {
+    background-color: palegoldenrod;
+}
+.day-evt-3 {
+    background-color: cadetblue;
+}
+.day-evt-4 {
+    background-color: royalblue;
+}
+.team-week {
+    line-height: 0.5;
+}
+
+@media (max-width: 750px) {
+	.day {
+		width: 10%;
+	}
+}
+
 @media (min-width: 400px) {
 	body {
 		font-size: 16px;
 	}
 }
-    .day {
-        margin: 4px;
-        background-color: whitesmoke;
-        border-color: black;
-        height: 20px;
-        width: 70px;
-        display: inline-block;
-    }
-    .cell {
-    }
-    .day-evt-1 {
-        background-color: indianred;
-    }
-    .day-evt-2 {
-        background-color: palegoldenrod;
-    }
-    .day-evt-3 {
-        background-color: cadetblue;
-    }
