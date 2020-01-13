@@ -34,7 +34,8 @@
     <div class="week">
         <span class="cell week-row-header bold">W{getWeek(date)}</span>
         {#each displayDays as day, i}
-        <span class="cell day">{format(addDays(date, i), "cccccc dd/MM")}</span>
+        <span class="cell day team-week-header long">{format(addDays(date, i), "cccccc dd/MM")}</span>
+        <span class="cell day team-week-header short">{format(addDays(date, i), " dd/MM")}</span>
         {/each}
     </div>
     {#each users as user, i}
@@ -48,15 +49,28 @@
     }
     .week-row-header {
         display: inline-block;
-        width: 120px;
+        width: 15%;
+    }
+    .team-week-header.short{
+        display: none;
     }
     .day {
-        margin: 4px;
-        height: 20px;
-        width: 70px;
-        display: inline-block;
+        background-color:transparent;
     }
     .team-week {
         margin-bottom: 20px;
+    }
+    @media (max-width: 750px) {
+        .team-week-header.long{
+            display: none;
+        } 
+        .team-week-header.short{
+            display: inline-block;
+        }
+    }
+    @media (max-width: 550px) {
+        .team-week-header.short{
+            display: none;
+        }
     }
 </style>

@@ -35,6 +35,9 @@
     export let users = [];
     export let dataDays = [];
     export let events;
+    let defaultType = 1;//oncalled
+
+    $selected_event = defaultType;
 
     const socket = io();
 
@@ -52,28 +55,68 @@
     });
 
     const defaultEventClick = event_type => () => {
-        selected_event.set(event_type);
-    };
+            selected_event.set(event_type);
+        };
 </script>
 
 <svelte:head>
     <title>Planning</title>
 </svelte:head>
-{#each events as event, i}
-<div>
-    <span 
-        on:click={defaultEventClick(event.type)}
-        class="cell day day-evt-{event.type}"
-        class:selected="{event.type === $selected_event}">
-    </span>
+<div class='events-selection'>
+    {#each events as event, i}
+    <div>
+        <span 
+            on:click={defaultEventClick(event.type)}
+            class="cell day day-evt-{event.type}"
+            class:selected="{event.type === $selected_event}">
+        </span>
+        <span class="label">
+            {event.name}
+        </span>
+    </div>
+    {/each}
 </div>
-{/each}
 {#if days.length > 0 }
 <Month {users} {firstDayOfTheWeek} {days} {disabledDays} {dataDays} {slug} {socket}></Month>
 {/if}
 
 <style>
+    .day {
+        border: 3px solid transparent;  
+    }
     .selected {
         border: 3px solid red;  
+    }
+    .events-selection {
+        position: fixed;
+        left: 10px;
+    }
+    @media (max-width: 1200px) {
+        .events-selection {
+            width: 100px;
+        }
+    }
+    @media (max-width: 1050px) {
+        .events-selection {
+            left: 150px;
+            top: 0px;
+            z-index: 1050;
+            width: 70%;
+        }
+        .events-selection div{
+            display: inline-block;
+            width: 100px;
+        }
+    }
+    @media (max-width: 750px) {
+        .events-selection .label{
+            display: none;
+        }
+        .events-selection div{
+            width: 20%;
+        }
+        .events-selection .day{
+            width: 90%;
+        }
     }
 </style>

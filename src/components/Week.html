@@ -13,10 +13,8 @@
     export let socket;
     let onCall = [];
     let days = cloneDeep(displayDays);
-    let defaultType = 1;//oncalled
 
     const callClick = dayIndex => () => {
-        console.log($selected_event);
             let daydate = format(addDays(date, dayIndex), "yyyyMMdd");
             let event = {slug: slug};
             
@@ -61,7 +59,7 @@
         vertical-align: top;
         line-height: 25px;
         display: inline-block;
-        width: 120px;
+        width: 15%;
     }
 
     .disabled {
