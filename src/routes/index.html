@@ -16,18 +16,25 @@
     const initPlanning = {
         name: '',
         slug: '',
+        start_date: new Date(),
         users: [{
                 name: 'Admin 1',
                 role: 'admin',
-                id: 1
+                id: 1,
+                from_date: new Date(),
+                to_date: null
             }, {
                 name: 'User 2',
                 role: 'admin',
-                id: 2
+                id: 2,
+                from_date: new Date(),
+                to_date: null
             }, {
                 name: 'User 3',
                 role: 'user',
-                id: 3
+                id: 3,
+                from_date: new Date(),
+                to_date: null
             }],
         week: {
             dayOne: 1,
