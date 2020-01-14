@@ -18,7 +18,8 @@
         let firstDayOfTheWeek = data.week.dayOne;
         let disabledDays = data.week.disabled;
         let events = data.events;
-        return {users, days, firstDayOfTheWeek, disabledDays, dataDays, slug, events};
+        let processed = data.processed;
+        return {users, days, firstDayOfTheWeek, disabledDays, dataDays, slug, events, processed};
     }
 </script>
 <script>
@@ -41,6 +42,7 @@
     export let users = [];
     export let dataDays = [];
     export let events;
+    export let processed;
     let defaultType = 1;//oncalled
 
     $selected_event = defaultType;
@@ -82,6 +84,15 @@
     </div>
     {/each}
 </div>
+<div class="processed">
+{#each Object.keys(processed.oncalled.users) as user_id}
+<div>
+    <b>{users.find(x=> x.id == user_id).name}</b>: 
+<p>done {processed.oncalled.users[user_id].done} </p>
+<p>recommended {processed.oncalled.users[user_id].recommended}</p>
+</div>
+{/each}
+</div>
 {#if days.length > 0 }
 <Month {users} {firstDayOfTheWeek} {days} {disabledDays} {dataDays} {slug} {socket}></Month>
 {/if}
@@ -96,6 +107,11 @@
     .events-selection {
         position: fixed;
         left: 10px;
+    }
+    .processed {
+        position: fixed;
+        left: 10px;
+        margin-top: 150px;
     }
     @media (max-width: 1200px) {
         .events-selection {

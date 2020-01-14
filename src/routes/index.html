@@ -35,7 +35,7 @@
                 id: 3,
                 from_date: new Date(),
                 to_date: null
-            }],
+        }],
         week: {
             dayOne: 1,
             days: [0, 1, 2, 3, 4, 5, 6],
@@ -62,10 +62,34 @@
             },
             {
                 "type": 3,
-                "name": "holyday",
+                "name": "absence",
+                "desc": ""
+            },
+            {
+                "type": 4,
+                "name": "vacation",
                 "desc": ""
             }
-        ]
+        ],
+    "processed" : {
+        "oncalled" : {
+            "users" : {
+                "1" : {
+                    "done": 0,
+                    "recommended": 0
+                },
+                "2" : {
+                    "done": 0,
+                    "recommended": 0
+                },
+                "3" : {
+                    "done": 0,
+                    "recommended": 0
+                }
+            },
+            "last_updated_at" : ISODate("2020-01-01T00:00:00.000Z")
+        }
+    }
     }
 
 
