@@ -13,6 +13,7 @@
 
     export let host;
     let gotoHref = '';
+    
     const initPlanning = {
         name: '',
         slug: '',
@@ -71,27 +72,26 @@
                 "desc": ""
             }
         ],
-    "processed" : {
-        "oncalled" : {
-            "users" : {
-                "1" : {
-                    "done": 0,
-                    "recommended": 0
+        "processed" : {
+            "oncalled" : {
+                "users" : {
+                    "1" : {
+                        "done": 0,
+                        "recommended": 0
+                    },
+                    "2" : {
+                        "done": 0,
+                        "recommended": 0
+                    },
+                    "3" : {
+                        "done": 0,
+                        "recommended": 0
+                    }
                 },
-                "2" : {
-                    "done": 0,
-                    "recommended": 0
-                },
-                "3" : {
-                    "done": 0,
-                    "recommended": 0
-                }
-            },
-            "last_updated_at" : ISODate("2020-01-01T00:00:00.000Z")
+                "last_updated_at" : new Date()//ISODate("2020-01-01T00:00:00.000Z")
+            }
         }
-    }
-    }
-
+    };
 
     const create = function () {
         console.log('post');
@@ -111,8 +111,6 @@
             console.log('POST error', err.message);
         });
     };
-
-
 
 </script>
 <style>

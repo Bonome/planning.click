@@ -1,4 +1,19 @@
+<!--
+Copyright (C) 2020 bonome
 
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
 <script context="module">
 // TODO 
 // add label on selected event 
@@ -9,8 +24,18 @@
         const {slug} = page.params;
 
         const resDays = await this.fetch('planning/' + slug + '/days.json', {method: 'get'});
-        const dataDays = await resDays.json();
-
+        const rawDataDays = await resDays.json();
+        let dataDays = {};
+        for (let idx = 0; idx<rawDataDays.length;idx++) {
+            if(dataDays[rawDataDays[idx].user] == null) {
+                dataDays[rawDataDays[idx].user] = {};
+            }
+            dataDays[rawDataDays[idx].user][rawDataDays[idx].date] = {
+                type: rawDataDays[idx].type,
+                _id: rawDataDays[idx]._id
+            }
+        }
+        console.log(dataDays);
         const response = await this.fetch('planning/' + slug + '.json', {method: 'get'});
         const data = await response.json();
         let users = data.users;
@@ -25,16 +50,12 @@
 <script>
     import { onMount } from "svelte";
     import io from "socket.io-client";
+    import { endOfWeek, subWeeks, addWeeks, parseISO, compareAsc } from 'date-fns';
 
     import { selected_event } from '../../store.js';
     import { conf } from '../../conf.js';
     import Month from '../../components/Month.html';
 
-    // su, mo, tu, we, th, fr, sa
-//    let days = [0, 1, 2, 3, 4, 5, 6];
-//    let firstDayOfTheWeek = 1;
-//    let disabledDays = [0, 6];
-//    let slug = slug;//'tenderspage';
     export let slug;
     export let days = [];
     export let firstDayOfTheWeek;
@@ -44,7 +65,7 @@
     export let events;
     export let processed;
     let defaultType = 1;//oncalled
-
+    
     $selected_event = defaultType;
 
     const socket = io();
@@ -52,46 +73,86 @@
     socket.on('connect', function () {
         socket.emit('join', slug);
     });
+        
+    onMount(async function() {
+        let lastDayOfLastWeek = subWeeks(endOfWeek(new Date(), { weekStartsOn: firstDayOfTheWeek }), 1);
+        
+        console.log(lastDayOfLastWeek);
+        let last_processed = parseISO(processed.oncalled.last_updated_at);
+        
+        let cmp = compareAsc(lastDayOfLastWeek, last_processed);
+        if(cmp === 1) {
+            console.log('process');
+            // last_processed date is older than last day of last week so reprocessing
+            
+            const response = await fetch("planning/tenderspage/process.json", {
+                method: 'post',
+                headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({'lastDayOfLastWeek': lastDayOfLastWeek, 'type': 1})
+            });
+            const json = await response.json();
+            let data = json;
+            console.log(data);
+            console.log(processed);
+            for (let k = 0; k < data.length; k++) {
+                let _id = data[k]._id;
+                if(processed.oncalled.users[_id] == null) {
+                    processed.oncalled.users[_id] = {todo: 0, done: 0}
+                }
+                processed.oncalled.users[_id].done = data[k].count;
+            }
+            processed.oncalled.last_updated_at = lastDayOfLastWeek;
+        }else{
+            console.log('nothing to do');
+        }
+        
+    });
 
     socket.on('day', (day) => {
-        let idx = dataDays.findIndex((dday) => dday._id === day._id);
-        if (idx >= 0) {
-            dataDays[idx] = day;
-        } else {
-            dataDays[dataDays.length] = day;
+        if(dataDays[day.user] == null) {
+            dataDays[day.user] = {};
+        }
+        dataDays[day.user][day.date] = {
+            type: day.type,
+            _id: day._id
         }
     });
 
     const defaultEventClick = event_type => () => {
-            selected_event.set(event_type);
-        };
+        selected_event.set(event_type);
+    };
 </script>
 
 <svelte:head>
     <title>Planning</title>
 </svelte:head>
-<div class='events-selection'>
-    {#each events as event, i}
-    <div>
-        <span 
-            on:click={defaultEventClick(event.type)}
-            class="cell day day-evt-{event.type}"
-            class:selected="{event.type === $selected_event}">
-        </span>
-        <span class="label">
-            {event.name}
-        </span>
+<div class="side-infos">
+    <div class='events-selection'>
+        {#each events as event, i}
+        <div>
+            <span 
+                on:click={defaultEventClick(event.type)}
+                class="cell day day-evt-{event.type}"
+                class:selected="{event.type === $selected_event}">
+            </span>
+            <span class="label">
+                {event.name}
+            </span>
+        </div>
+        {/each}
     </div>
-    {/each}
-</div>
-<div class="processed">
-{#each Object.keys(processed.oncalled.users) as user_id}
-<div>
-    <b>{users.find(x=> x.id == user_id).name}</b>: 
-<p>done {processed.oncalled.users[user_id].done} </p>
-<p>recommended {processed.oncalled.users[user_id].recommended}</p>
-</div>
-{/each}
+    <div class="processed">
+        {#each Object.keys(processed.oncalled.users) as user_id}
+        <div>
+            <b>{users.find(x=> x.id == user_id).name}</b>: 
+            <p>todo: {processed.oncalled.users[user_id].recommended}</p>
+            <p>done: {processed.oncalled.users[user_id].done} </p>
+        </div>
+        {/each}
+    </div>
 </div>
 {#if days.length > 0 }
 <Month {users} {firstDayOfTheWeek} {days} {disabledDays} {dataDays} {slug} {socket}></Month>
@@ -104,40 +165,42 @@
     .selected {
         border: 3px solid red;  
     }
-    .events-selection {
+    .side-infos {
         position: fixed;
         left: 10px;
     }
     .processed {
-        position: fixed;
-        left: 10px;
-        margin-top: 150px;
+        margin-top: 20px;
+        line-height: 0.5;
     }
     @media (max-width: 1200px) {
-        .events-selection {
+        .side-infos {
             width: 100px;
         }
     }
     @media (max-width: 1050px) {
-        .events-selection {
+        .side-infos {
             left: 150px;
             top: 0px;
             z-index: 1050;
             width: 70%;
         }
-        .events-selection div{
+        .side-infos .events-selection div{
             display: inline-block;
             width: 100px;
         }
-    }
-    @media (max-width: 750px) {
-        .events-selection .label{
+        .processed {
             display: none;
         }
-        .events-selection div{
+    }
+    @media (max-width: 750px) {
+        .side-infos .events-selection .label{
+            display: none;
+        }
+        .side-infos .events-selection div{
             width: 20%;
         }
-        .events-selection .day{
+        .side-infos .events-selection .day{
             width: 90%;
         }
     }

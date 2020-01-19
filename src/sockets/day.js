@@ -9,7 +9,7 @@ export const day = (socket, event) => {
             await client.connect();
 
             const db = client.db(engine.dbName);
-
+            console.log(event);
             let r = await db.collection('userday').updateOne(
                 {
                     slug: event.data.slug,
