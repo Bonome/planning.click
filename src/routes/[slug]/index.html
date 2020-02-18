@@ -19,7 +19,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // add label on selected event 
 // add on-call computing for each user 
 // since the beginning until the end of this week or the end last displayed week
+// disabled days between the first day of the week of start_date of planning and the start_date of the planning
 // + some little things :)
+    import { startOfWeek } from 'date-fns';
     export async function preload(page) {
         const {slug} = page.params;
 
@@ -44,7 +46,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         let disabledDays = data.week.disabled;
         let events = data.events;
         let processed = data.processed;
-        return {users, days, firstDayOfTheWeek, disabledDays, dataDays, slug, events, processed};
+        let planning_number_week_displayed = data.number_week_displayed;
+        
+        let penultimateWeek = subWeeks(startOfWeek(new Date(), { weekStartsOn: firstDayOfTheWeek }), 1);
+        if(compareAsc(parseISO(data.start_date), penultimateWeek) === 1) {
+            // penultimateWeek date is older than the beginning of the planning
+            penultimateWeek = startOfWeek(parseISO(data.start_date), { weekStartsOn: firstDayOfTheWeek });
+        }
+        
+        if(compareAsc(addWeeks(endOfWeek(penultimateWeek, { weekStartsOn: firstDayOfTheWeek }), planning_number_week_displayed), parseISO(data.week.disabledStored)) === 1) {
+            // date of the disabled day stored in db is older than the last of the last week displayed
+            
+            // TODO save in db all disabled day until the last day of the week displayed
+            // TODO THEN remove disabling days in month
+        }
+        
+        return {users, days, firstDayOfTheWeek, disabledDays, dataDays, slug, events, processed, penultimateWeek, planning_number_week_displayed};
     }
 </script>
 <script>
@@ -52,7 +69,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     import io from "socket.io-client";
     import { endOfWeek, subWeeks, addWeeks, parseISO, compareAsc } from 'date-fns';
 
-    import { selected_event } from '../../store.js';
+    import { selected_event, number_week_displayed } from '../../store.js';
     import { conf } from '../../conf.js';
     import Month from '../../components/Month.html';
 
@@ -64,9 +81,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     export let dataDays = [];
     export let events;
     export let processed;
+    export let penultimateWeek;
+    export let planning_number_week_displayed;
     let defaultType = 1;//oncalled
     
     $selected_event = defaultType;
+    $number_week_displayed = planning_number_week_displayed;
+    
 
     const socket = io();
 
@@ -155,7 +176,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     </div>
 </div>
 {#if days.length > 0 }
-<Month {users} {firstDayOfTheWeek} {days} {disabledDays} {dataDays} {slug} {socket}></Month>
+<Month {users} {firstDayOfTheWeek} {days} {disabledDays} {dataDays} {slug} {socket} {penultimateWeek}></Month>
 {/if}
 
 <style>

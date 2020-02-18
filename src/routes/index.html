@@ -18,6 +18,7 @@
         name: '',
         slug: '',
         start_date: new Date(),
+        number_week_displayed: 12,
         users: [{
                 name: 'Admin 1',
                 role: 'admin',
@@ -40,55 +41,56 @@
         week: {
             dayOne: 1,
             days: [0, 1, 2, 3, 4, 5, 6],
-            disabled: [0, 6]
+            disabled: [0, 6],
+            disabledStored: new Date()
         },
         off: {
 
         },
-        "events": [
+        events: [
             {
-                "type": 0,
-                "name": "basic-work",
-                "desc": ""
+                type: 0,
+                name: 'basic-work',
+                desc: ''
             },
             {
-                "type": 1,
-                "name": "on-call",
-                "desc": ""
+                type: 1,
+                name: 'on-call',
+                desc: ''
             },
             {
-                "type": 2,
-                "name": "school",
-                "desc": ""
+                type: 2,
+                name: 'school',
+                desc: ''
             },
             {
-                "type": 3,
-                "name": "absence",
-                "desc": ""
+                type: 3,
+                name: 'absence',
+                desc: ''
             },
             {
-                "type": 4,
-                "name": "vacation",
-                "desc": ""
+                type: 4,
+                name: 'vacation',
+                desc: ''
             }
         ],
-        "processed" : {
-            "oncalled" : {
-                "users" : {
-                    "1" : {
-                        "done": 0,
-                        "recommended": 0
+        processed : {
+            oncalled : {
+                users : {
+                    1 : {
+                        done: 0,
+                        recommended: 0
                     },
-                    "2" : {
-                        "done": 0,
-                        "recommended": 0
+                    2 : {
+                        done: 0,
+                        recommended: 0
                     },
-                    "3" : {
-                        "done": 0,
-                        "recommended": 0
+                    3 : {
+                        done: 0,
+                        recommended: 0
                     }
                 },
-                "last_updated_at" : new Date()//ISODate("2020-01-01T00:00:00.000Z")
+                last_updated_at : new Date()//ISODate("2020-01-01T00:00:00.000Z")
             }
         }
     };

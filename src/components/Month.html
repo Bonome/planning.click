@@ -2,6 +2,7 @@
     import { startOfWeek, subWeeks, addWeeks } from 'date-fns';
     
     import TeamWeek from './TeamWeek.html';
+    import { number_week_displayed } from '../store.js';
     
     export let users;
     export let firstDayOfTheWeek;
@@ -10,9 +11,9 @@
     export let dataDays;
     export let disabledDays;
     export let socket;
-    let weeks = Array(12);
-    
-    let penultimateWeek = subWeeks(startOfWeek(new Date(), { weekStartsOn: firstDayOfTheWeek }), 1);
+    export let penultimateWeek;
+    let weeks = Array($number_week_displayed);
+    console.log(penultimateWeek);
 //    setTimeout(() => {
 //        let count = 3;
 //        penultimateWeek = subWeeks(startOfWeek(penultimateWeek, { weekStartsOn: firstDayOfTheWeek }), count);
