@@ -39,6 +39,9 @@ code {
 }
 .cell {
 }
+.day-evt--1 {
+    background-color: gainsboro;
+}
 .day-evt-1 {
     background-color: indianred;
 }

@@ -12,6 +12,10 @@
     export let slug;
     export let socket;
     let displayDays = [];
+        
+    const convertDate = function(dayIndex){
+        return new Date(addDays(date, dayIndex).getTime() - (addDays(date, dayIndex).getTimezoneOffset() * 60000)).toISOString()
+    }
     
     let shift = days.indexOf(firstDayOfTheWeek);
     if(shift < 0) {
@@ -24,11 +28,20 @@
             idxDayNumber = days.length  + idxDayNumber;
         }
         if (disabledDays.indexOf(day) >= 0) {
-            displayDays[idxDayNumber] = {disabled :true, index: _j};
-        } else {
-            displayDays[idxDayNumber] = {disabled :false, index: _j};
+            if(dataDays[convertDate(idxDayNumber)] == null) {
+                dataDays[convertDate(idxDayNumber)] = {};
+            }
+            dataDays[convertDate(idxDayNumber)] = {
+                null : {
+                    type: -1
+                }
+            }
+//        } else {
+//            displayDays[idxDayNumber] = {disabled :false, index: _j};
         }
+            displayDays[idxDayNumber] = {index: _j};
     }
+
 </script>
 <div class='team-week'>
     <div class="week">

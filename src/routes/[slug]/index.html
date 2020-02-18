@@ -27,10 +27,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         const rawDataDays = await resDays.json();
         let dataDays = {};
         for (let idx = 0; idx<rawDataDays.length;idx++) {
-            if(dataDays[rawDataDays[idx].user] == null) {
-                dataDays[rawDataDays[idx].user] = {};
+            if(dataDays[rawDataDays[idx].date] == null) {
+                dataDays[rawDataDays[idx].date] = {};
             }
-            dataDays[rawDataDays[idx].user][rawDataDays[idx].date] = {
+            dataDays[rawDataDays[idx].date][rawDataDays[idx].user] = {
                 type: rawDataDays[idx].type,
                 _id: rawDataDays[idx]._id
             }
@@ -112,10 +112,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     });
 
     socket.on('day', (day) => {
-        if(dataDays[day.user] == null) {
-            dataDays[day.user] = {};
+        if(dataDays[day.date] == null) {
+            dataDays[day.date] = {};
         }
-        dataDays[day.user][day.date] = {
+        dataDays[day.date][day.user] = {
             type: day.type,
             _id: day._id
         }

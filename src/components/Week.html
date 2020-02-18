@@ -15,19 +15,19 @@
     let days = cloneDeep(displayDays);
 
     const callClick = dayIndex => () => {
-        if(dataDays[user.id+''] != null && dataDays[user.id+''][convertDate(dayIndex)] != null) {
-            if(dataDays[user.id+''][convertDate(dayIndex)].type == $selected_event) {
-                dataDays[user.id+''][convertDate(dayIndex)].type = 0;
+        if(dataDays[convertDate(dayIndex)] != null && dataDays[convertDate(dayIndex)][user.id] != null) {
+            if(dataDays[convertDate(dayIndex)][user.id].type == $selected_event) {
+                dataDays[convertDate(dayIndex)][user.id].type = 0;
             }else{
-                dataDays[user.id+''][convertDate(dayIndex)].type = $selected_event;
+                dataDays[convertDate(dayIndex)][user.id].type = $selected_event;
             }
-        }else if(dataDays[user.id+''] == null) {
-            dataDays[user.id+''] = {};
-            dataDays[user.id+''][convertDate(dayIndex)] = {
+        }else if(dataDays[convertDate(dayIndex)] == null) {
+            dataDays[convertDate(dayIndex)] = {};
+            dataDays[convertDate(dayIndex)][user.id] = {
                 type: $selected_event
             };
         }else{
-            dataDays[user.id+''][convertDate(dayIndex)] = {
+            dataDays[convertDate(dayIndex)][user.id] = {
                 type: $selected_event
             };
         }
@@ -37,10 +37,10 @@
             slug: slug,
             date: new Date(days[dayIndex].daydate.getTime() - (days[dayIndex].daydate.getTimezoneOffset() * 60000)),
             user: user.id,
-            type: dataDays[user.id+''][convertDate(dayIndex)].type
+            type: dataDays[convertDate(dayIndex)][user.id].type
         };
-        if(dataDays[user.id+''][convertDate(dayIndex)]._id != null) {
-            event.data._id = dataDays[user.id+''][convertDate(dayIndex)]._id;
+        if(dataDays[convertDate(dayIndex)][user.id]._id != null) {
+            event.data._id = dataDays[convertDate(dayIndex)][user.id]._id;
         }
         socket.emit("day", event);
 //        let daydate = addDays(date, dayIndex);
@@ -76,6 +76,18 @@
         }
         return days[dayIndex].utcdate;
     }
+    
+    const displayClass = function(dayIndex) {
+        if(dataDays[convertDate(dayIndex)] == null) {
+            return '0';
+        }
+        if(dataDays[convertDate(dayIndex)][null] != null) {
+            return dataDays[convertDate(dayIndex)][null].type;
+        }
+        if(dataDays[convertDate(dayIndex)][user.id] != null) {
+            return dataDays[convertDate(dayIndex)][user.id].type;
+        }
+    }
 
 </script>
 
@@ -84,7 +96,7 @@
     {#each days as day, i}
     <span 
         on:click={callClick(i)}
-        class="cell day {dataDays[user.id+''] == null || dataDays[user.id+''][convertDate(i)] == null?'day-evt-0':'day-evt-'+dataDays[user.id][convertDate(i)].type}"
+        class="cell day day-evt-{displayClass(i)}"
         class:disabled="{day.disabled}">
     </span>
     {/each}
@@ -97,9 +109,5 @@
         line-height: 25px;
         display: inline-block;
         width: 15%;
-    }
-
-    .disabled {
-        background-color: gainsboro;
     }
 </style>
