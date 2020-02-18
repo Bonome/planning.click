@@ -77,15 +77,15 @@
         return days[dayIndex].utcdate;
     }
     
-    const displayClass = function(dayIndex) {
-        if(dataDays[convertDate(dayIndex)] == null) {
+    const displayClass = function(day) {
+        if(day == null) {
             return '0';
         }
-        if(dataDays[convertDate(dayIndex)][null] != null) {
-            return dataDays[convertDate(dayIndex)][null].type;
+        if(day[null] != null) {
+            return day[null].type;
         }
-        if(dataDays[convertDate(dayIndex)][user.id] != null) {
-            return dataDays[convertDate(dayIndex)][user.id].type;
+        if(day[user.id] != null) {
+            return day[user.id].type;
         }
     }
 
@@ -96,7 +96,7 @@
     {#each days as day, i}
     <span 
         on:click={callClick(i)}
-        class="cell day day-evt-{displayClass(i)}"
+        class="cell day day-evt-{displayClass(dataDays[convertDate(i)])}"
         class:disabled="{day.disabled}">
     </span>
     {/each}
