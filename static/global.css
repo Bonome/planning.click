@@ -34,10 +34,13 @@ code {
     background-color: whitesmoke;
     border-color: black;
     height: 20px;
-    width: 70px;
+    width: 75px;
     display: inline-block;
 }
 .cell {
+}
+.day-evt--2 {
+    background-color: gainsboro;
 }
 .day-evt--1 {
     background-color: gainsboro;

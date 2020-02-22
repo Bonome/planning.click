@@ -37,7 +37,7 @@ export function post(req, res, next) {
                 {
                     "$match": {
                         type: data.type,
-                        slug: 'tenderspage',
+                        slug: slug,
                         date: {$lte: data.lastDayOfLastWeek}
                     }
                 },

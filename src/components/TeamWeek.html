@@ -6,7 +6,7 @@
     export let users;
     export let firstDayOfTheWeek;
     export let days;
-    export let disabledDays;
+//    export let disabledDays;
     export let date;
     export let dataDays;
     export let slug;
@@ -27,18 +27,18 @@
         if (idxDayNumber < 0) {
             idxDayNumber = days.length  + idxDayNumber;
         }
-        if (disabledDays.indexOf(day) >= 0) {
-            if(dataDays[convertDate(idxDayNumber)] == null) {
-                dataDays[convertDate(idxDayNumber)] = {};
-            }
-            dataDays[convertDate(idxDayNumber)] = {
-                null : {
-                    type: -1
-                }
-            }
-//        } else {
-//            displayDays[idxDayNumber] = {disabled :false, index: _j};
-        }
+//        if (disabledDays.indexOf(day) >= 0) {
+//            if(dataDays[convertDate(idxDayNumber)] == null) {
+//                dataDays[convertDate(idxDayNumber)] = {};
+//            }
+//            dataDays[convertDate(idxDayNumber)] = {
+//                null : {
+//                    type: -1
+//                }
+//            }
+////        } else {
+////            displayDays[idxDayNumber] = {disabled :false, index: _j};
+//        }
             displayDays[idxDayNumber] = {index: _j};
     }
 
@@ -57,6 +57,12 @@
 </div>
 
 <style>
+    .week {
+        font-size: 0;
+    }
+    .week span{
+        font-size: 16px;
+    }
     .bold {
         font-weight: bold;
     }

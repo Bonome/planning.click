@@ -9,7 +9,7 @@
     export let days;
     export let slug;
     export let dataDays;
-    export let disabledDays;
+//    export let disabledDays;
     export let socket;
     export let penultimateWeek;
     let weeks = Array($number_week_displayed);
@@ -25,5 +25,5 @@
 //    }, 10000);
 </script>
 {#each weeks as week, i}
-<TeamWeek {users} {firstDayOfTheWeek} {days} {disabledDays} {slug} {dataDays} {socket} date='{addWeeks(penultimateWeek, i)}'></TeamWeek>
+<TeamWeek {users} {firstDayOfTheWeek} {days} {slug} {dataDays} {socket} date='{addWeeks(penultimateWeek, i)}'></TeamWeek>
 {/each}

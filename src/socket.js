@@ -5,7 +5,7 @@ export const socket = {
     init : function (server) {
         io(server).on('connection', function (socket) {
             socket.on('join', function(room) {
-                console.log('joining room: '+room);
+//                console.log('joining room: '+room);
                 socket.join(room);
             });
             socket.on('day', (data) => day(socket, data));

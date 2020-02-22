@@ -21,23 +21,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // since the beginning until the end of this week or the end last displayed week
 // disabled days between the first day of the week of start_date of planning and the start_date of the planning
 // + some little things :)
-    import { startOfWeek } from 'date-fns';
+    import { startOfWeek, eachDayOfInterval, getDay } from 'date-fns';
     export async function preload(page) {
         const {slug} = page.params;
 
-        const resDays = await this.fetch('planning/' + slug + '/days.json', {method: 'get'});
-        const rawDataDays = await resDays.json();
-        let dataDays = {};
-        for (let idx = 0; idx<rawDataDays.length;idx++) {
-            if(dataDays[rawDataDays[idx].date] == null) {
-                dataDays[rawDataDays[idx].date] = {};
-            }
-            dataDays[rawDataDays[idx].date][rawDataDays[idx].user] = {
-                type: rawDataDays[idx].type,
-                _id: rawDataDays[idx]._id
-            }
-        }
-        console.log(dataDays);
         const response = await this.fetch('planning/' + slug + '.json', {method: 'get'});
         const data = await response.json();
         let users = data.users;
@@ -47,26 +34,65 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         let events = data.events;
         let processed = data.processed;
         let planning_number_week_displayed = data.number_week_displayed;
-        
-        let penultimateWeek = subWeeks(startOfWeek(new Date(), { weekStartsOn: firstDayOfTheWeek }), 1);
-        if(compareAsc(parseISO(data.start_date), penultimateWeek) === 1) {
+
+        let penultimateWeek = subWeeks(startOfWeek(new Date(), {weekStartsOn: firstDayOfTheWeek}), 1);
+        if (compareAsc(parseISO(data.start_date), penultimateWeek) === 1) {
             // penultimateWeek date is older than the beginning of the planning
-            penultimateWeek = startOfWeek(parseISO(data.start_date), { weekStartsOn: firstDayOfTheWeek });
+            penultimateWeek = startOfWeek(parseISO(data.start_date), {weekStartsOn: firstDayOfTheWeek});
         }
-        
-        if(compareAsc(addWeeks(endOfWeek(penultimateWeek, { weekStartsOn: firstDayOfTheWeek }), planning_number_week_displayed), parseISO(data.week.disabledStored)) === 1) {
+        let lastDisplayedDate = addWeeks(endOfWeek(penultimateWeek, {weekStartsOn: firstDayOfTheWeek}), planning_number_week_displayed);
+        lastDisplayedDate = new Date(lastDisplayedDate.getTime() - (lastDisplayedDate.getTimezoneOffset() * 60000));
+        if (compareAsc(lastDisplayedDate, parseISO(data.week.disabledStored)) === 1) {
             // date of the disabled day stored in db is older than the last of the last week displayed
-            
-            // TODO save in db all disabled day until the last day of the week displayed
-            // TODO THEN remove disabling days in month
+
+            var daysDisplayedToProcessed = eachDayOfInterval({
+                start: parseISO(data.week.disabledStored),
+                end: lastDisplayedDate
+            });
+
+            let disablingDays = {
+                dates: [],
+                lastProcessed: lastDisplayedDate
+            }
+            for (let i = 0; i < daysDisplayedToProcessed.length; i++) {
+                let normalizeDate = new Date(daysDisplayedToProcessed[i].getTime() - (daysDisplayedToProcessed[i].getTimezoneOffset() * 60000));
+                if (disabledDays.indexOf(getDay(daysDisplayedToProcessed[i])) >= 0) {
+
+                    disablingDays.dates.push({date: normalizeDate, type: -1});
+                }
+
+                if (data.off[normalizeDate.toISOString()] != null) {
+                    disablingDays.dates.push({date: normalizeDate, type: -2, comment: data.off[normalizeDate.toISOString()]});
+                }
+            }
+            await this.fetch('planning/' + slug + '/disablingdays.json', {
+                method: 'post',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(disablingDays)
+            });
         }
-        
-        return {users, days, firstDayOfTheWeek, disabledDays, dataDays, slug, events, processed, penultimateWeek, planning_number_week_displayed};
+        const resDays = await this.fetch('planning/' + slug + '/days.json', {method: 'get'});
+        const rawDataDays = await resDays.json();
+        let dataDays = {};
+        for (let idx = 0; idx < rawDataDays.length; idx++) {
+            if (dataDays[rawDataDays[idx].date] == null) {
+                dataDays[rawDataDays[idx].date] = {};
+            }
+            dataDays[rawDataDays[idx].date][rawDataDays[idx].user] = {
+                type: rawDataDays[idx].type,
+                _id: rawDataDays[idx]._id
+            }
+        }
+
+        return {users, days, firstDayOfTheWeek, dataDays, slug, events, processed, penultimateWeek, planning_number_week_displayed};
     }
 </script>
 <script>
-    import { onMount } from "svelte";
-    import io from "socket.io-client";
+    import { onMount } from 'svelte';
+    import io from 'socket.io-client';
     import { endOfWeek, subWeeks, addWeeks, parseISO, compareAsc } from 'date-fns';
 
     import { selected_event, number_week_displayed } from '../../store.js';
@@ -76,7 +102,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     export let slug;
     export let days = [];
     export let firstDayOfTheWeek;
-    export let disabledDays = [];
+//    export let disabledDays = [];
     export let users = [];
     export let dataDays = [];
     export let events;
@@ -84,56 +110,51 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     export let penultimateWeek;
     export let planning_number_week_displayed;
     let defaultType = 1;//oncalled
-    
+
     $selected_event = defaultType;
     $number_week_displayed = planning_number_week_displayed;
-    
+
 
     const socket = io();
 
     socket.on('connect', function () {
         socket.emit('join', slug);
     });
-        
-    onMount(async function() {
-        let lastDayOfLastWeek = subWeeks(endOfWeek(new Date(), { weekStartsOn: firstDayOfTheWeek }), 1);
-        
-        console.log(lastDayOfLastWeek);
+
+    onMount(async function () {
+        let lastDayOfLastWeek = subWeeks(endOfWeek(new Date(), {weekStartsOn: firstDayOfTheWeek}), 1);
+
         let last_processed = parseISO(processed.oncalled.last_updated_at);
-        
+
         let cmp = compareAsc(lastDayOfLastWeek, last_processed);
-        if(cmp === 1) {
-            console.log('process');
+        if (cmp === 1) {
             // last_processed date is older than last day of last week so reprocessing
-            
-            const response = await fetch("planning/tenderspage/process.json", {
+
+            const response = await fetch('planning/' + slug + '/process.json', {
                 method: 'post',
                 headers: {
-                  'Accept': 'application/json',
-                  'Content-Type': 'application/json'
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({'lastDayOfLastWeek': lastDayOfLastWeek, 'type': 1})
+                body: JSON.stringify({lastDayOfLastWeek: lastDayOfLastWeek, type: 1})
             });
-            const json = await response.json();
-            let data = json;
-            console.log(data);
-            console.log(processed);
+            let data = await response.json();
             for (let k = 0; k < data.length; k++) {
                 let _id = data[k]._id;
-                if(processed.oncalled.users[_id] == null) {
+                if (processed.oncalled.users[_id] == null) {
                     processed.oncalled.users[_id] = {todo: 0, done: 0}
                 }
                 processed.oncalled.users[_id].done = data[k].count;
             }
             processed.oncalled.last_updated_at = lastDayOfLastWeek;
-        }else{
-            console.log('nothing to do');
+        } else {
+            console.log('nothing to do, to processed numbers of doing of each user...');
         }
-        
+
     });
 
     socket.on('day', (day) => {
-        if(dataDays[day.date] == null) {
+        if (dataDays[day.date] == null) {
             dataDays[day.date] = {};
         }
         dataDays[day.date][day.user] = {
@@ -143,8 +164,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     });
 
     const defaultEventClick = event_type => () => {
-        selected_event.set(event_type);
-    };
+            selected_event.set(event_type);
+        };
 </script>
 
 <svelte:head>
@@ -176,7 +197,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     </div>
 </div>
 {#if days.length > 0 }
-<Month {users} {firstDayOfTheWeek} {days} {disabledDays} {dataDays} {slug} {socket} {penultimateWeek}></Month>
+<Month {users} {firstDayOfTheWeek} {days} {dataDays} {slug} {socket} {penultimateWeek}></Month>
 {/if}
 
 <style>
