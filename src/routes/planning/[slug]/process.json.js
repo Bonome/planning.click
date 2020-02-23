@@ -33,7 +33,7 @@ export function post(req, res, next) {
 
             const db = client.db(engine.dbName);
 
-            let r = await db.collection('userday').aggregate([
+            let pastDone = await db.collection('userday').aggregate([
                 {
                     "$match": {
                         type: data.type,
@@ -48,12 +48,69 @@ export function post(req, res, next) {
                     }
                 }
             ]).toArray();
-//            assert.equal(1, r.upsertedCount+r.modifiedCount);
+
+            let pastTodo = await db.collection('userday').aggregate([
+                {
+                    "$match": {
+                        type: {$in: [-2, -1, 2, 3, 4]},
+                        slug: slug,
+                        date: {$lte: data.lastDayOfLastWeek}
+                    }
+                },
+                {
+                    "$group": {
+                        _id: '$user',
+                        count: {$sum: 1}
+                    }
+                }
+            ]).toArray();
+
+            let futurePlanned = await db.collection('userday').aggregate([
+                {
+                    "$match": {
+                        type: data.type,
+                        slug: slug,
+                        date: {$gte: data.lastDayOfLastWeek, $lte: data.lastDisplayedDate}
+                    }
+                },
+                {
+                    "$group": {
+                        _id: '$user',
+                        count: {$sum: 1}
+                    }
+                }
+            ]).toArray();
+            
+            
+            let futureTodo = await db.collection('userday').aggregate([
+                {
+                    "$match": {
+                        type: {$in: [-2, -1, 2, 3, 4]},
+                        slug: slug,
+                        date: {$gte: data.lastDayOfLastWeek, $lte: data.lastDisplayedDate},
+                    }
+                },
+                {
+                    "$group": {
+                        _id: '$user',
+                        count: {$sum: 1}
+                    }
+                }
+            ]).toArray();
+            console.log(pastTodo);
+            
             res.writeHead(200, {
                 'Content-Type': 'application/json'
             });
 
-            res.end(JSON.stringify(r));
+            res.end(JSON.stringify(
+                {
+                    pastDone: pastDone,
+                    pastTodo: pastTodo,
+                    futurePlanned: futurePlanned,
+                    futureTodo: futureTodo
+                }
+            ));
 
         } catch (err) {
             console.log(err.stack);

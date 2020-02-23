@@ -21,10 +21,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // since the beginning until the end of this week or the end last displayed week
 // disabled days between the first day of the week of start_date of planning and the start_date of the planning
 // + some little things :)
-    import { startOfWeek, eachDayOfInterval, getDay } from 'date-fns';
+    import { startOfWeek, eachDayOfInterval, getDay, differenceInDays } from 'date-fns';
     export async function preload(page) {
         const {slug} = page.params;
-
+        
+        // Get data about planning
         const response = await this.fetch('planning/' + slug + '.json', {method: 'get'});
         const data = await response.json();
         let users = data.users;
@@ -35,12 +36,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         let processed = data.processed;
         let planning_number_week_displayed = data.number_week_displayed;
 
+        // Storing disabled days 
         let penultimateWeek = subWeeks(startOfWeek(new Date(), {weekStartsOn: firstDayOfTheWeek}), 1);
         if (compareAsc(parseISO(data.start_date), penultimateWeek) === 1) {
             // penultimateWeek date is older than the beginning of the planning
             penultimateWeek = startOfWeek(parseISO(data.start_date), {weekStartsOn: firstDayOfTheWeek});
         }
-        let lastDisplayedDate = addWeeks(endOfWeek(penultimateWeek, {weekStartsOn: firstDayOfTheWeek}), planning_number_week_displayed);
+        let lastDisplayedDate = addWeeks(endOfWeek(penultimateWeek, {weekStartsOn: firstDayOfTheWeek}), planning_number_week_displayed -1 );
         lastDisplayedDate = new Date(lastDisplayedDate.getTime() - (lastDisplayedDate.getTimezoneOffset() * 60000));
         if (compareAsc(lastDisplayedDate, parseISO(data.week.disabledStored)) === 1) {
             // date of the disabled day stored in db is older than the last of the last week displayed
@@ -74,6 +76,82 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 body: JSON.stringify(disablingDays)
             });
         }
+        
+        // Processed user data about on-call done and to do
+        let lastDayOfLastWeek = subWeeks(endOfWeek(new Date(), {weekStartsOn: firstDayOfTheWeek}), 1);
+
+//        let last_processed = parseISO(processed.oncalled.last_updated_at);
+
+//        if (compareAsc(lastDayOfLastWeek, last_processed) === 1) {
+            // last_processed date is older than last day of last week so reprocessing
+
+            let totalPastDays = differenceInDays(lastDayOfLastWeek, parseISO(data.start_date)) + 1;
+            let totalFutureDays = differenceInDays(lastDisplayedDate, lastDayOfLastWeek);
+            const response = await this.fetch('planning/' + slug + '/process.json', {
+                method: 'post',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({lastDayOfLastWeek: lastDayOfLastWeek, type: 1, lastDisplayedDate: lastDisplayedDate})
+            });
+            let userProcessedData = await response.json();
+            
+            let commonPastAbsentCount = 0;
+            let totalPastSpecificCount = 0;
+            for (let m = 0; m < userProcessedData.pastTodo.length; m++) {
+                if(userProcessedData.pastTodo[m]._id == null) {
+                    commonPastAbsentCount = userProcessedData.pastTodo[m].count;
+                }else{
+                    totalPastSpecificCount = totalPastSpecificCount + userProcessedData.pastTodo[m].count;
+                }
+            }
+            let defautPastTodo = 0;
+            defautPastTodo = (((totalPastDays - commonPastAbsentCount) / data.nbUserOnCalledRequired) * data.nbUserOnCalledRequired / (((totalPastDays - commonPastAbsentCount) / data.nbUserOnCalledRequired) * users.length - totalPastSpecificCount)) * ((totalPastDays - commonPastAbsentCount) / data.nbUserOnCalledRequired);
+                
+            let commonFutureAbsentCount = 0;
+            let totalFutureSpecificCount = 0;
+            for (let m = 0; m < userProcessedData.futureTodo.length; m++) {
+                if(userProcessedData.futureTodo[m]._id == null) {
+                    commonFutureAbsentCount = userProcessedData.futureTodo[m].count;
+                }else{
+                    totalFutureSpecificCount = totalFutureSpecificCount + userProcessedData.futureTodo[m].count;
+                }
+            }
+            let defautFutureTodo = 0;
+            defautFutureTodo = (((totalFutureDays - commonFutureAbsentCount) / data.nbUserOnCalledRequired) * data.nbUserOnCalledRequired / (((totalFutureDays - commonFutureAbsentCount) / data.nbUserOnCalledRequired) * users.length - totalFutureSpecificCount)) * ((totalFutureDays - commonFutureAbsentCount) / data.nbUserOnCalledRequired);
+ 
+            for (let l = 0; l < users.length; l++) {
+                let user_id = users[l].id;
+                
+                processed.oncalled.users[user_id] = {past: {todo: defautPastTodo, commonTodo: commonPastAbsentCount, done: 0}, future:{todo: defautFutureTodo, commonTodo: commonFutureAbsentCount, done: 0}};
+            }
+            for (let k = 0; k < userProcessedData.pastDone.length; k++) {
+                let _id = userProcessedData.pastDone[k]._id;
+                processed.oncalled.users[_id].past.done = userProcessedData.pastDone[k].count;
+            }
+            for (let k = 0; k < userProcessedData.pastTodo.length; k++) {
+                let _id = userProcessedData.pastTodo[k]._id;
+                if(_id != null) {
+                    processed.oncalled.users[_id].past.todo = ((((totalPastDays - commonPastAbsentCount) / data.nbUserOnCalledRequired) - userProcessedData.pastTodo[k].count) * data.nbUserOnCalledRequired / (((totalPastDays - commonPastAbsentCount) / data.nbUserOnCalledRequired) * users.length - totalPastSpecificCount)) * ((totalPastDays - commonPastAbsentCount) / data.nbUserOnCalledRequired);
+                }
+            }
+            for (let k = 0; k < userProcessedData.futurePlanned.length; k++) {
+                let _id = userProcessedData.futurePlanned[k]._id;
+                processed.oncalled.users[_id].future.done = userProcessedData.futurePlanned[k].count;
+            }
+            for (let k = 0; k < userProcessedData.futureTodo.length; k++) {
+                let _id = userProcessedData.futureTodo[k]._id;
+                if(_id != null) {
+                    processed.oncalled.users[_id].future.todo = ((((totalFutureDays - commonFutureAbsentCount) / data.nbUserOnCalledRequired) - userProcessedData.futureTodo[k].count) * data.nbUserOnCalledRequired / (((totalFutureDays - commonFutureAbsentCount) / data.nbUserOnCalledRequired) * users.length - totalFutureSpecificCount)) * ((totalFutureDays - commonFutureAbsentCount) / data.nbUserOnCalledRequired);
+                }
+            }
+            processed.oncalled.last_updated_at = lastDayOfLastWeek;
+//        } else {
+//            console.log('nothing to do, to processed numbers of doing of each user...');
+//        }
+        
+        // get day data to display in plannning
         const resDays = await this.fetch('planning/' + slug + '/days.json', {method: 'get'});
         const rawDataDays = await resDays.json();
         let dataDays = {};
@@ -121,38 +199,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         socket.emit('join', slug);
     });
 
-    onMount(async function () {
-        let lastDayOfLastWeek = subWeeks(endOfWeek(new Date(), {weekStartsOn: firstDayOfTheWeek}), 1);
-
-        let last_processed = parseISO(processed.oncalled.last_updated_at);
-
-        let cmp = compareAsc(lastDayOfLastWeek, last_processed);
-        if (cmp === 1) {
-            // last_processed date is older than last day of last week so reprocessing
-
-            const response = await fetch('planning/' + slug + '/process.json', {
-                method: 'post',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({lastDayOfLastWeek: lastDayOfLastWeek, type: 1})
-            });
-            let data = await response.json();
-            for (let k = 0; k < data.length; k++) {
-                let _id = data[k]._id;
-                if (processed.oncalled.users[_id] == null) {
-                    processed.oncalled.users[_id] = {todo: 0, done: 0}
-                }
-                processed.oncalled.users[_id].done = data[k].count;
-            }
-            processed.oncalled.last_updated_at = lastDayOfLastWeek;
-        } else {
-            console.log('nothing to do, to processed numbers of doing of each user...');
-        }
-
-    });
-
     socket.on('day', (day) => {
         if (dataDays[day.date] == null) {
             dataDays[day.date] = {};
@@ -190,8 +236,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         {#each Object.keys(processed.oncalled.users) as user_id}
         <div>
             <b>{users.find(x=> x.id == user_id).name}</b>: 
-            <p>todo: {processed.oncalled.users[user_id].recommended}</p>
-            <p>done: {processed.oncalled.users[user_id].done} </p>
+            <p>past: {processed.oncalled.users[user_id].past.done} / {processed.oncalled.users[user_id].past.todo}</p>
+            <p>coming {processed.oncalled.users[user_id].future.done} / {processed.oncalled.users[user_id].future.todo}</p>
         </div>
         {/each}
     </div>
