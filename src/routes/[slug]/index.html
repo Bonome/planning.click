@@ -26,8 +26,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         const {slug} = page.params;
         
         // Get data about planning
-        const response = await this.fetch('planning/' + slug + '.json', {method: 'get'});
-        const data = await response.json();
+        const respPlanning = await this.fetch('planning/' + slug + '.json', {method: 'get'});
+        const data = await respPlanning.json();
         let users = data.users;
         let days = data.week.days;
         let firstDayOfTheWeek = data.week.dayOne;
@@ -87,7 +87,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
             let totalPastDays = differenceInDays(lastDayOfLastWeek, parseISO(data.start_date)) + 1;
             let totalFutureDays = differenceInDays(lastDisplayedDate, lastDayOfLastWeek);
-            const response = await this.fetch('planning/' + slug + '/process.json', {
+            const resProcessed = await this.fetch('planning/' + slug + '/process.json', {
                 method: 'post',
                 headers: {
                     'Accept': 'application/json',
@@ -95,7 +95,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 },
                 body: JSON.stringify({lastDayOfLastWeek: lastDayOfLastWeek, type: 1, lastDisplayedDate: lastDisplayedDate})
             });
-            let userProcessedData = await response.json();
+            let userProcessedData = await resProcessed.json();
             
             let commonPastAbsentCount = 0;
             let totalPastSpecificCount = 0;

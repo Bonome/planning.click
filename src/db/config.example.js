@@ -13,7 +13,9 @@ export const cfg = {
             "safe": true
         }
     },
-    "tingo":{
-        "path":"./data"
+    "redis": {
+        "host":"127.0.0.1",
+        "port":6379,
+        "db":"planning"
     }
 }

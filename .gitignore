@@ -7,3 +7,4 @@ yarn-error.log
 /tags
 /nbproject
 /data/plannings
+/src/db/config.js

@@ -24,7 +24,7 @@
     "sirv": "^0.4.0",
     "socket.io": "^2.3.0",
     "socket.io-client": "^2.3.0",
-    "tingodb": "^0.6.1",
+    "socket.io-redis": "^5.2.0",
     "utf-8-validate": "^5.0.2"
   },
   "devDependencies": {
