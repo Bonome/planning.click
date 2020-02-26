@@ -236,8 +236,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         {#each Object.keys(processed.oncalled.users) as user_id}
         <div>
             <b>{users.find(x=> x.id == user_id).name}</b>: 
-            <p>past: {processed.oncalled.users[user_id].past.done} / {processed.oncalled.users[user_id].past.todo}</p>
-            <p>coming {processed.oncalled.users[user_id].future.done} / {processed.oncalled.users[user_id].future.todo}</p>
+            <p>past: {processed.oncalled.users[user_id].past.done} / {Math.round(processed.oncalled.users[user_id].past.todo * 100) / 100}</p>
+            <p>coming {processed.oncalled.users[user_id].future.done} / {Math.round(processed.oncalled.users[user_id].future.todo * 100) / 100}</p>
         </div>
         {/each}
     </div>

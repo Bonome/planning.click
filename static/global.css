@@ -52,6 +52,10 @@ h1 {
 a {
 	color: inherit;
 }
+b, .bold {
+    font-family: JournalSansWebBold;
+    font-weight: normal;
+}
 
 pre, code {
 	font-family: JournalSansWebBook, menlo, inconsolata, monospace !important;
