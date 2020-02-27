@@ -1,9 +1,11 @@
 <script>
+
+    import { onMount } from 'svelte';
     import { startOfWeek, subWeeks, addWeeks } from 'date-fns';
-    
+
     import TeamWeek from './TeamWeek.html';
     import { number_week_displayed } from '../store.js';
-    
+
     export let users;
     export let firstDayOfTheWeek;
     export let days;
@@ -12,18 +14,61 @@
 //    export let disabledDays;
     export let socket;
     export let penultimateWeek;
+    const nbWeek = 1;
+
     let weeks = Array($number_week_displayed);
-    console.log(penultimateWeek);
-//    setTimeout(() => {
-//        let count = 3;
-//        penultimateWeek = subWeeks(startOfWeek(penultimateWeek, { weekStartsOn: firstDayOfTheWeek }), count);
-//        weeks = weeks.concat(Array(count));
-//    }, 5000);
-//    setTimeout(() => {
-//        let count = 3;
-//        weeks = weeks.concat(Array(count));
-//    }, 10000);
+    let observer;
+
+    onMount(() => {
+        scroll(0, 30);
+
+        observer = new IntersectionObserver(loadMore, {
+            rootMargin: '-60px 0px 0px 0px',
+            threshold: 1,
+        });
+        let targetPrevious = document.querySelector('.load_previous');
+        let targetNext = document.querySelector('.load_next');
+
+        observer.observe(targetPrevious);
+        observer.observe(targetNext);
+    });
+    const loadMore = function(entries) {
+        entries.forEach(entry => {
+            // target is intersecting the viewport
+            if (entry.isIntersecting) {
+                if(entry.target.className.indexOf('load_previous') >= 0) {
+                    loadPrevious();
+                    scroll(0, 30);
+                } else if(entry.target.className.indexOf('load_next') >= 0) {
+                    loadNext();
+                }
+            }
+        });
+    }
+    const loadPrevious = () => {
+            penultimateWeek = subWeeks(startOfWeek(penultimateWeek, {weekStartsOn: firstDayOfTheWeek}), nbWeek);
+            weeks = weeks.concat(Array(nbWeek));
+        };
+    const loadNext = () => {
+            weeks = weeks.concat(Array(nbWeek));
+        };
 </script>
+
+<div class="load_more load_previous">
+    <!--// TODO: hide when first day of the first displayed week is older or equal the planning start_date--> 
+    <span on:click={loadPrevious}>Load previous week</span>
+</div>
 {#each weeks as week, i}
 <TeamWeek {users} {firstDayOfTheWeek} {days} {slug} {dataDays} {socket} date='{addWeeks(penultimateWeek, i)}'></TeamWeek>
 {/each}
+<div class="load_more load_next">
+    <span on:click={loadNext}>Load next week</span>
+</div>
+<style>
+    .load_more {
+        color: darkgrey;
+        height: 20px;
+        margin-bottom: 15px;
+        display: block;
+    }
+</style>
