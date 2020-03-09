@@ -43,13 +43,13 @@
 	font-style: normal;
 }
 @font-face {
-	font-family: 'HKGrotesk-Regular';
-	src: url('fonts/HKGrotesk-Regular.eot');
+	font-family: 'HKGrotesk-Medium';
+	src: url('fonts/HKGrotesk-Medium.eot');
 	src:
-	     url('fonts/HKGrotesk-Regular.eot?#iefix') format('embedded-opentype'),
-	     url('fonts/HKGrotesk-Regular.woff2') format('woff2'),
-	     url('fonts/HKGrotesk-Regular.woff') format('woff'),
-	     url('fonts/HKGrotesk-Regular.ttf') format('truetype');
+	     url('fonts/HKGrotesk-Medium.eot?#iefix') format('embedded-opentype'),
+	     url('fonts/HKGrotesk-Medium.woff2') format('woff2'),
+	     url('fonts/HKGrotesk-Medium.woff') format('woff'),
+	     url('fonts/HKGrotesk-Medium.ttf') format('truetype');
 	font-weight: normal;
 	font-style: normal;
 }
@@ -66,7 +66,7 @@
 }*/
 body {
 	margin: 0;
-	font-family: JournalSansWebBook, HKGrotesk-Regular, sans-serif;
+	font-family: JournalSansWebBook, HKGrotesk-Medium, sans-serif;
 	font-size: 14px;
 	line-height: 1.5;
 	color: #333;
@@ -91,7 +91,7 @@ b, .bold {
 }
 
 pre, code {
-	font-family: JournalSansWebBook, HKGrotesk-Regular, menlo, inconsolata, monospace !important;
+	font-family: JournalSansWebBook, HKGrotesk-Medium, menlo, inconsolata, monospace !important;
 	font-size: calc(1em - 2px);
 	color: #555;
 	background-color: #f0f0f0;
