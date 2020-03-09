@@ -20,7 +20,7 @@
 	font-weight: normal;
 	font-style: normal;
 }
-@font-face {
+/*@font-face {
 	font-family: 'JournalSansWebItalic';
 	src: url('fonts/Journal_Sans_Italic.eot');
 	src:
@@ -30,10 +30,43 @@
 	     url('fonts/Journal_Sans_Italic.ttf') format('truetype');
 	font-weight: normal;
 	font-style: normal;
+}*/
+@font-face {
+	font-family: 'HKGrotesk-Bold';
+	src: url('fonts/HKGrotesk-Bold.eot');
+	src:
+	     url('fonts/HKGrotesk-Bold.eot?#iefix') format('embedded-opentype'),
+	     url('fonts/HKGrotesk-Bold.woff2') format('woff2'),
+	     url('fonts/HKGrotesk-Bold.woff') format('woff'),
+	     url('fonts/HKGrotesk-Bold.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
 }
+@font-face {
+	font-family: 'HKGrotesk-Regular';
+	src: url('fonts/HKGrotesk-Regular.eot');
+	src:
+	     url('fonts/HKGrotesk-Regular.eot?#iefix') format('embedded-opentype'),
+	     url('fonts/HKGrotesk-Regular.woff2') format('woff2'),
+	     url('fonts/HKGrotesk-Regular.woff') format('woff'),
+	     url('fonts/HKGrotesk-Regular.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+/*@font-face {
+	font-family: 'HKGrotesk-Italic';
+	src: url('fonts/HKGrotesk-Italic.eot');
+	src:
+	     url('fonts/HKGrotesk-Italic.eot?#iefix') format('embedded-opentype'),
+	     url('fonts/HKGrotesk-Italic.woff2') format('woff2'),
+	     url('fonts/HKGrotesk-Italic.woff') format('woff'),
+	     url('fonts/HKGrotesk-Italic.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}*/
 body {
 	margin: 0;
-	font-family: JournalSansWebBook, sans-serif;
+	font-family: JournalSansWebBook, HKGrotesk-Regular, sans-serif;
 	font-size: 14px;
 	line-height: 1.5;
 	color: #333;
@@ -53,12 +86,12 @@ a {
 	color: inherit;
 }
 b, .bold {
-    font-family: JournalSansWebBold;
+    font-family: JournalSansWebBold, HKGrotesk-Bold, sans-serif;
     font-weight: normal;
 }
 
 pre, code {
-	font-family: JournalSansWebBook, menlo, inconsolata, monospace !important;
+	font-family: JournalSansWebBook, HKGrotesk-Regular, menlo, inconsolata, monospace !important;
 	font-size: calc(1em - 2px);
 	color: #555;
 	background-color: #f0f0f0;
