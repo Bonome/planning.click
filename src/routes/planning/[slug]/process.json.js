@@ -38,7 +38,7 @@ export function post(req, res, next) {
                     "$match": {
                         type: data.type,
                         slug: slug,
-                        date: {$lte: data.lastDayOfLastWeek}
+                        date: {$lte: new Date(data.lastDayOfLastWeek)}
                     }
                 },
                 {
@@ -54,7 +54,7 @@ export function post(req, res, next) {
                     "$match": {
                         type: {$in: [-2, -1, 2, 3, 4]},
                         slug: slug,
-                        date: {$lte: data.lastDayOfLastWeek}
+                        date: {$lte: new Date(data.lastDayOfLastWeek)}
                     }
                 },
                 {
@@ -70,11 +70,12 @@ export function post(req, res, next) {
                     "$match": {
                         type: data.type,
                         slug: slug,
-                        date: {$gte: data.lastDayOfLastWeek, $lte: data.lastDisplayedDate}
+                        date: {$gte: new Date(data.lastDayOfLastWeek), $lte: new Date(data.lastDisplayedDate)}
                     }
                 },
                 {
                     "$group": {
+//                        _id: { user: '$user', type: "$type" },
                         _id: '$user',
                         count: {$sum: 1}
                     }
@@ -87,7 +88,7 @@ export function post(req, res, next) {
                     "$match": {
                         type: {$in: [-2, -1, 2, 3, 4]},
                         slug: slug,
-                        date: {$gte: data.lastDayOfLastWeek, $lte: data.lastDisplayedDate},
+                        date: {$gte: new Date(data.lastDayOfLastWeek), $lte: new Date(data.lastDisplayedDate)},
                     }
                 },
                 {
