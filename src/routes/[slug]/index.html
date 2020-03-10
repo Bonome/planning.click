@@ -35,12 +35,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         let events = data.events;
         let processed = data.processed;
         let planning_number_week_displayed = data.number_week_displayed;
+        let planning_start_date_db = data.start_date
 
         // Storing disabled days 
         let penultimateWeek = subWeeks(startOfWeek(new Date(), {weekStartsOn: firstDayOfTheWeek}), 1);
-        if (compareAsc(parseISO(data.start_date), penultimateWeek) === 1) {
+        if (compareAsc(parseISO(planning_start_date), penultimateWeek) === 1) {
             // penultimateWeek date is older than the beginning of the planning
-            penultimateWeek = startOfWeek(parseISO(data.start_date), {weekStartsOn: firstDayOfTheWeek});
+            penultimateWeek = startOfWeek(parseISO(planning_start_date), {weekStartsOn: firstDayOfTheWeek});
         }
         let lastDisplayedDate = addWeeks(endOfWeek(penultimateWeek, {weekStartsOn: firstDayOfTheWeek}), planning_number_week_displayed -1 );
         lastDisplayedDate = new Date(lastDisplayedDate.getTime() - (lastDisplayedDate.getTimezoneOffset() * 60000));
@@ -85,7 +86,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //        if (compareAsc(lastDayOfLastWeek, last_processed) === 1) {
             // last_processed date is older than last day of last week so reprocessing
 
-            let totalPastDays = differenceInDays(lastDayOfLastWeek, parseISO(data.start_date)) + 1;
+            let totalPastDays = differenceInDays(lastDayOfLastWeek, parseISO(planning_start_date)) + 1;
             let totalFutureDays = differenceInDays(lastDisplayedDate, lastDayOfLastWeek);
             const resProcessed = await this.fetch('planning/' + slug + '/process.json', {
                 method: 'post',
@@ -165,7 +166,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             }
         }
 
-        return {users, days, firstDayOfTheWeek, dataDays, slug, events, processed, penultimateWeek, planning_number_week_displayed};
+        return {users, days, firstDayOfTheWeek, dataDays, slug, events, processed, penultimateWeek, planning_number_week_displayed, planning_start_date_db};
     }
 </script>
 <script>
@@ -173,7 +174,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     import io from 'socket.io-client';
     import { endOfWeek, subWeeks, addWeeks, parseISO, compareAsc } from 'date-fns';
 
-    import { selected_event, number_week_displayed } from '../../store.js';
+    import { selected_event, number_week_displayed, planning_start_date } from '../../store.js';
     import { conf } from '../../conf.js';
     import Month from '../../components/Month.html';
 
@@ -187,11 +188,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     export let processed;
     export let penultimateWeek;
     export let planning_number_week_displayed;
+    export let planning_start_date_db;
     let defaultType = 1;//oncalled
 
     $selected_event = defaultType;
     $number_week_displayed = planning_number_week_displayed;
-
+    $planning_start_date = planning_start_date_db;
 
     const socket = io();
 
@@ -248,7 +250,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 <style>
     .day {
-        border: 3px solid transparent;  
+        border: 3px solid white;  
     }
     .selected {
         border: 3px solid red;  

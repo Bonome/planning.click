@@ -1,10 +1,10 @@
 <script>
 
     import { onMount } from 'svelte';
-    import { startOfWeek, subWeeks, addWeeks } from 'date-fns';
+    import { startOfWeek, subWeeks, addWeeks, parseISO, isBefore } from 'date-fns';
 
     import TeamWeek from './TeamWeek.html';
-    import { number_week_displayed } from '../store.js';
+    import { number_week_displayed, planning_start_date } from '../store.js';
 
     export let users;
     export let firstDayOfTheWeek;
@@ -20,17 +20,19 @@
     let observer;
 
     onMount(() => {
-        scroll(0, 30);
-
         observer = new IntersectionObserver(loadMore, {
             rootMargin: '-60px 0px 0px 0px',
             threshold: 1,
         });
-        let targetPrevious = document.querySelector('.load_previous');
-        let targetNext = document.querySelector('.load_next');
 
-        observer.observe(targetPrevious);
+        let targetNext = document.querySelector('.load_next');
         observer.observe(targetNext);
+
+        if (isBefore(parseISO($planning_start_date), penultimateWeek)) {
+            scroll(0, 30);
+            let targetPrevious = document.querySelector('.load_previous');
+            observer.observe(targetPrevious);
+        }
     });
     const loadMore = function(entries) {
         entries.forEach(entry => {
@@ -46,18 +48,18 @@
         });
     }
     const loadPrevious = () => {
-            penultimateWeek = subWeeks(startOfWeek(penultimateWeek, {weekStartsOn: firstDayOfTheWeek}), nbWeek);
-            weeks = weeks.concat(Array(nbWeek));
-        };
+        penultimateWeek = subWeeks(startOfWeek(penultimateWeek, {weekStartsOn: firstDayOfTheWeek}), nbWeek);
+        weeks = weeks.concat(Array(nbWeek));
+    };
     const loadNext = () => {
-            weeks = weeks.concat(Array(nbWeek));
-        };
+        weeks = weeks.concat(Array(nbWeek));
+    };
 </script>
-
-<div class="load_more load_previous">
-    <!--// TODO: hide when first day of the first displayed week is older or equal the planning start_date--> 
-    <span on:click={loadPrevious}>Load previous week</span>
-</div>
+{#if isBefore(parseISO($planning_start_date), penultimateWeek)}
+    <div class="load_more load_previous">
+        <span on:click={loadPrevious}>Load previous week</span>
+    </div>
+{/if}
 {#each weeks as week, i}
 <TeamWeek {users} {firstDayOfTheWeek} {days} {slug} {dataDays} {socket} date='{addWeeks(penultimateWeek, i)}'></TeamWeek>
 {/each}
