@@ -18,7 +18,7 @@ export function post(req, res, next) {
             let r = await db.collection('userday').updateOne(
                 {
                     slug: slug,
-                    date: date,
+                    date: new Date(date),
                     user: user
                 },        
                 {

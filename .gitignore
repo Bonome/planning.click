@@ -8,3 +8,4 @@ yarn-error.log
 /nbproject
 /data/plannings
 /src/db/config.js
+/static/fonts/Journal_Sans*

@@ -13,7 +13,7 @@ export const day = (socket, event) => {
             let r = await db.collection('userday').updateOne(
                 {
                     slug: event.data.slug,
-                    date: event.data.date,
+                    date: new Date(event.data.date),
                     user: event.data.user
                 },        
                 {

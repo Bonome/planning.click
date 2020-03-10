@@ -97,7 +97,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 body: JSON.stringify({lastDayOfLastWeek: lastDayOfLastWeek, type: 1, lastDisplayedDate: lastDisplayedDate})
             });
             let userProcessedData = await resProcessed.json();
-            
+
             let commonPastAbsentCount = 0;
             let totalPastSpecificCount = 0;
             for (let m = 0; m < userProcessedData.pastTodo.length; m++) {
@@ -238,8 +238,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         {#each Object.keys(processed.oncalled.users) as user_id}
         <div>
             <b>{users.find(x=> x.id == user_id).name}</b>: 
-            <p>past: {processed.oncalled.users[user_id].past.done} / {Math.round(processed.oncalled.users[user_id].past.todo * 100) / 100}</p>
-            <p>coming {processed.oncalled.users[user_id].future.done} / {Math.round(processed.oncalled.users[user_id].future.todo * 100) / 100}</p>
+            <p>past: &nbsp;&nbsp;&nbsp;{processed.oncalled.users[user_id].past.done} / {Math.round(processed.oncalled.users[user_id].past.todo * 100) / 100}</p>
+            <p>comin: {processed.oncalled.users[user_id].future.done} / {Math.round(processed.oncalled.users[user_id].future.todo * 100) / 100}</p>
         </div>
         {/each}
     </div>
