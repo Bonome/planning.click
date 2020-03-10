@@ -110,10 +110,10 @@ pre, code {
 .cell {
 }
 .day-evt--2 {
-    background-color: #d1d1dc;;
+    background-color: #bebeca;/*d1d1dc*/
 }
 .day-evt--1 {
-    background-color: #d1d1dc;;
+    background-color: #bebeca;
 }
 .day-evt-1 {
     background-color: indianred;
@@ -126,6 +126,15 @@ pre, code {
 }
 .day-evt-4 {
     background-color: royalblue;
+}
+.day-evt-5 {
+    background: linear-gradient(to right, royalblue, royalblue 47%, #d1dcd6 55%, #d1dcd6);
+}
+.day-evt-6 {
+    background: linear-gradient(to right, #d1dcd6, #d1dcd6 47%, royalblue 55%, royalblue);
+}
+.day-evt-7 {
+    background: linear-gradient(to right, royalblue, royalblue 47%, indianred 55%, indianred);
 }
 .team-week {
     line-height: 0.5;

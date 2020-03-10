@@ -33,72 +33,143 @@ export function post(req, res, next) {
 
             const db = client.db(engine.dbName);
 
+            let planning = await db.collection('plannings').findOne({slug: slug});
+
             let pastDone = await db.collection('userday').aggregate([
                 {
                     "$match": {
-                        type: data.type,
+                        type: {$in: [1, 7]},
                         slug: slug,
                         date: {$lte: new Date(data.lastDayOfLastWeek)}
                     }
                 },
                 {
                     "$group": {
-                        _id: '$user',
+                        _id: { user: '$user', type: "$type" },
                         count: {$sum: 1}
                     }
                 }
             ]).toArray();
+            let pastDoneArray = [];
+            for(let i=0; i<pastDone.length; i++) {
+                let obj = pastDone[i];
+                let coefType = 1;
+                let event = planning.events.find(evt => evt.type==obj._id.type);
+                if(event != null) {
+                    if(event.duration != null) {
+                        coefType = event.duration.t4;
+                    }
+                }
+                let user = pastDoneArray.find(item => item._id == obj._id.user);
+		if(user == null) {
+                    pastDoneArray.push({_id: obj._id.user, count: obj.count*coefType});
+		}else{
+                    user.count = user.count + obj.count*coefType;
+                }
+	    }
+            pastDone = pastDoneArray;
 
             let pastTodo = await db.collection('userday').aggregate([
                 {
                     "$match": {
-                        type: {$in: [-2, -1, 2, 3, 4]},
+                        type: {$in: [-2, -1, 2, 3, 4, 5, 6, 7]},
                         slug: slug,
                         date: {$lte: new Date(data.lastDayOfLastWeek)}
                     }
                 },
                 {
                     "$group": {
-                        _id: '$user',
+                        _id: { user: '$user', type: "$type" },
                         count: {$sum: 1}
                     }
                 }
             ]).toArray();
+            let pastTodoArray = [];
+            for(let i=0; i<pastTodo.length; i++) {
+                let obj = pastTodo[i];
+                let coefType = 1;
+                let event = planning.events.find(evt => evt.type==obj._id.type);
+                if(event != null) {
+                    if(event.duration != null) {
+                        coefType = event.duration.t4;
+                    }
+                }
+                let user = pastTodoArray.find(item => item._id == obj._id.user);
+		if(user == null) {
+                    pastTodoArray.push({_id: obj._id.user, count: obj.count*coefType});
+		}else{
+                    user.count = user.count + obj.count*coefType;
+                }
+	    }
+            pastTodo = pastTodoArray;
 
             let futurePlanned = await db.collection('userday').aggregate([
                 {
                     "$match": {
-                        type: data.type,
+			type: {$in: [1, 7]},
                         slug: slug,
                         date: {$gte: new Date(data.lastDayOfLastWeek), $lte: new Date(data.lastDisplayedDate)}
                     }
                 },
                 {
                     "$group": {
-//                        _id: { user: '$user', type: "$type" },
-                        _id: '$user',
+                        _id: { user: '$user', type: "$type" },
                         count: {$sum: 1}
                     }
                 }
             ]).toArray();
-            
+	    let futurePlannedArray = [];
+            for(let i=0; i<futurePlanned.length; i++) {
+                let obj = futurePlanned[i];
+                let coefType = 1;
+                let event = planning.events.find(evt => evt.type==obj._id.type);
+                if(event != null) {
+                    if(event.duration != null) {
+                        coefType = event.duration.t1;
+                    }
+                }
+                let user = futurePlannedArray.find(item => item._id == obj._id.user);
+		if(user == null) {
+                    futurePlannedArray.push({_id: obj._id.user, count: obj.count*coefType});
+		}else{
+                    user.count = user.count + obj.count*coefType;
+                }
+	    }
+            futurePlanned = futurePlannedArray;
             
             let futureTodo = await db.collection('userday').aggregate([
                 {
                     "$match": {
-                        type: {$in: [-2, -1, 2, 3, 4]},
+                        type: {$in: [-2, -1, 2, 3, 4, 5, 6, 7]},
                         slug: slug,
                         date: {$gte: new Date(data.lastDayOfLastWeek), $lte: new Date(data.lastDisplayedDate)},
                     }
                 },
                 {
                     "$group": {
-                        _id: '$user',
+                        _id: { user: '$user', type: "$type" },
                         count: {$sum: 1}
                     }
                 }
             ]).toArray();
-            console.log(pastTodo);
+            let futureTodoArray = [];
+            for(let i=0; i<futureTodo.length; i++) {
+                let obj = futureTodo[i];
+                let coefType = 1;
+                let event = planning.events.find(evt => evt.type==obj._id.type);
+                if(event != null) {
+                    if(event.duration != null) {
+                        coefType = event.duration.t4;
+                    }
+                }
+                let user = futureTodoArray.find(item => item._id == obj._id.user);
+		if(user == null) {
+                    futureTodoArray.push({_id: obj._id.user, count: obj.count*coefType});
+		}else{
+                    user.count = user.count + obj.count*coefType;
+                }
+	    }
+            futureTodo = futureTodoArray;
             
             res.writeHead(200, {
                 'Content-Type': 'application/json'
