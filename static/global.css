@@ -101,7 +101,7 @@ pre, code {
 
 .day {
     margin: 3px;
-    background-color: #e9f7ef;
+    background-color: #d1dcd6;
     border-color: black;
     height: 20px;
     width: 75px;
@@ -110,10 +110,10 @@ pre, code {
 .cell {
 }
 .day-evt--2 {
-    background-color: gainsboro;
+    background-color: #d1d1dc;;
 }
 .day-evt--1 {
-    background-color: gainsboro;
+    background-color: #d1d1dc;;
 }
 .day-evt-1 {
     background-color: indianred;
