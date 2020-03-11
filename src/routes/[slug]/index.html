@@ -39,6 +39,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
         // Storing disabled days 
         let penultimateWeek = subWeeks(startOfWeek(new Date(), {weekStartsOn: firstDayOfTheWeek}), 1);
+	console.log(penultimateWeek);
         if (compareAsc(parseISO(planning_start_date), penultimateWeek) === 1) {
             // penultimateWeek date is older than the beginning of the planning
             penultimateWeek = startOfWeek(parseISO(planning_start_date), {weekStartsOn: firstDayOfTheWeek});
@@ -196,7 +197,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     $planning_start_date = planning_start_date_db;
 
     const socket = io();
-
+penultimateWeek = new Date(penultimateWeek.getTime() + (penultimateWeek.getTimezoneOffset() * 60000));
+console.log(penultimateWeek);
     socket.on('connect', function () {
         socket.emit('join', slug);
     });

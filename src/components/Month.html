@@ -20,6 +20,7 @@
     let observer;
 
     onMount(() => {
+	    console.log(penultimateWeek);
         observer = new IntersectionObserver(loadMore, {
             rootMargin: '-60px 0px 0px 0px',
             threshold: 1,
@@ -49,7 +50,8 @@
     }
     const loadPrevious = () => {
         penultimateWeek = subWeeks(startOfWeek(penultimateWeek, {weekStartsOn: firstDayOfTheWeek}), nbWeek);
-        weeks = weeks.concat(Array(nbWeek));
+        console.log(penultimateWeek);
+	weeks = weeks.concat(Array(nbWeek));
     };
     const loadNext = () => {
         weeks = weeks.concat(Array(nbWeek));
