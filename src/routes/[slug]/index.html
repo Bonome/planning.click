@@ -33,10 +33,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
         // Storing disabled days 
         let penultimateWeek = subWeeks(startOfWeek(new Date(), {weekStartsOn: firstDayOfTheWeek}), 1);
-	console.log(penultimateWeek);
-        if (compareAsc(parseISO(planning_start_date), penultimateWeek) === 1) {
+        if (compareAsc(parseISO(planning_start_date_db), penultimateWeek) === 1) {
             // penultimateWeek date is older than the beginning of the planning
-            penultimateWeek = startOfWeek(parseISO(planning_start_date), {weekStartsOn: firstDayOfTheWeek});
+            penultimateWeek = startOfWeek(parseISO(planning_start_date_db), {weekStartsOn: firstDayOfTheWeek});
         }
         let lastDisplayedDate = addWeeks(endOfWeek(penultimateWeek, {weekStartsOn: firstDayOfTheWeek}), planning_number_week_displayed -1 );
         lastDisplayedDate = new Date(lastDisplayedDate.getTime() - (lastDisplayedDate.getTimezoneOffset() * 60000));
@@ -83,8 +82,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 //        if (compareAsc(lastDayOfLastWeek, last_processed) === 1) {
             // last_processed date is older than last day of last week so reprocessing
-
-            let totalPastDays = differenceInDays(lastDayOfLastWeek, parseISO(planning_start_date)) + 1;
+            let totalPastDays = differenceInDays(lastDayOfLastWeek, parseISO(planning_start_date_db)) + 1;
             let totalFutureDays = differenceInDays(lastDisplayedDate, lastDayOfLastWeek);
             const resProcessed = await this.fetch('planning/' + slug + '/process.json', {
                 method: 'post',
