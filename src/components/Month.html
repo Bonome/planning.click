@@ -1,7 +1,7 @@
 <script>
 
     import { onMount } from 'svelte';
-    import { startOfWeek, subWeeks, addWeeks, parseISO, isBefore } from 'date-fns';
+    import { startOfWeek, subWeeks, addWeeks, parseISO, isBefore, isSameWeek } from 'date-fns';
 
     import TeamWeek from './TeamWeek.html';
     import { number_week_displayed, planning_start_date } from '../store.js';
@@ -41,7 +41,6 @@
             if (entry.isIntersecting) {
                 if(entry.target.className.indexOf('load_previous') >= 0) {
                     loadPrevious();
-                    scroll(0, 30);
                 } else if(entry.target.className.indexOf('load_next') >= 0) {
                     loadNext();
                 }
@@ -50,8 +49,12 @@
     }
     const loadPrevious = () => {
         penultimateWeek = subWeeks(startOfWeek(penultimateWeek, {weekStartsOn: firstDayOfTheWeek}), nbWeek);
-        console.log(penultimateWeek);
-	weeks = weeks.concat(Array(nbWeek));
+        weeks = weeks.concat(Array(nbWeek));
+        if (!isSameWeek(parseISO($planning_start_date), penultimateWeek)) {
+            setTimeout(() => {
+                scroll(0, 30);
+            }, 100);
+        }
     };
     const loadNext = () => {
         weeks = weeks.concat(Array(nbWeek));
