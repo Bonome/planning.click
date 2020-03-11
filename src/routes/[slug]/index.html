@@ -15,12 +15,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <script context="module">
-// TODO 
-// add label on selected event 
-// add on-call computing for each user 
-// since the beginning until the end of this week or the end last displayed week
-// disabled days between the first day of the week of start_date of planning and the start_date of the planning
-// + some little things :)
     import { startOfWeek, eachDayOfInterval, getDay, differenceInDays } from 'date-fns';
     export async function preload(page) {
         const {slug} = page.params;
@@ -48,6 +42,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         lastDisplayedDate = new Date(lastDisplayedDate.getTime() - (lastDisplayedDate.getTimezoneOffset() * 60000));
         if (compareAsc(lastDisplayedDate, parseISO(data.week.disabledStored)) === 1) {
             // date of the disabled day stored in db is older than the last of the last week displayed
+            //TODO : functionise the disabling process to apply it on loadMore
 
             var daysDisplayedToProcessed = eachDayOfInterval({
                 start: parseISO(data.week.disabledStored),
@@ -64,7 +59,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
                     disablingDays.dates.push({date: normalizeDate, type: -1});
                 }
-
+                if (data.off[normalizeDate.toISOString().substring(5)] != null) {
+                    disablingDays.dates.push({date: normalizeDate, type: -2, comment: data.off[normalizeDate.toISOString().substring(5)]});
+                }
                 if (data.off[normalizeDate.toISOString()] != null) {
                     disablingDays.dates.push({date: normalizeDate, type: -2, comment: data.off[normalizeDate.toISOString()]});
                 }
