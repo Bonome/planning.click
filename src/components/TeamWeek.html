@@ -1,5 +1,5 @@
 <script>
-    import { getWeek, format, addDays } from 'date-fns';
+    import { getWeek, format, addDays, isSameWeek } from 'date-fns';
     
     import Week from './Week.html';
     
@@ -43,7 +43,7 @@
     }
 
 </script>
-<div class='team-week'>
+<div class='team-week' class:toweek="{isSameWeek(new Date(), date)}">
     <div class="week">
         <span class="cell week-row-header bold">W{getWeek(date)}</span>
         {#each displayDays as day, i}

@@ -104,8 +104,11 @@ pre, code {
     background-color: #d1dcd6;
     border-color: black;
     height: 20px;
-    width: 75px;
+    width: 11%;
     display: inline-block;
+}
+.events-selection .day {
+    width: 30%;
 }
 .cell {
 }
@@ -138,11 +141,28 @@ pre, code {
 }
 .team-week {
     line-height: 0.5;
+    padding-left: 1%;
+}
+.team-week.toweek {
+    padding-top: 1%;
+    padding-bottom: 1%;
+    background-color: mistyrose;
 }
 
 @media (max-width: 750px) {
 	.day {
+		width: 10%;
+	}
+}
+@media (max-width: 400px) {
+	.day {
 		width: 9%;
+	}
+}
+@media (max-width: 265px) {
+	#sapper main {
+		padding-right: 0;
+		padding-left: 0;
 	}
 }
 
