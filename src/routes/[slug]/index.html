@@ -167,7 +167,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             }
         }
 
-        return {users, days, firstDayOfTheWeek, dataDays, slug, events, processed, penultimateWeek, planning_number_week_displayed, planning_start_date_db};
+        return {users, days, firstDayOfTheWeek, dataDays, slug, events, processed, planning_number_week_displayed, planning_start_date_db};
     }
 </script>
 <script>
@@ -187,7 +187,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     export let dataDays = [];
     export let events;
     export let processed;
-    export let penultimateWeek;
     export let planning_number_week_displayed;
     export let planning_start_date_db;
     let defaultType = 1;//oncalled
@@ -197,8 +196,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     $planning_start_date = planning_start_date_db;
 
     const socket = io();
-penultimateWeek = new Date(penultimateWeek.getTime() + (penultimateWeek.getTimezoneOffset() * 60000));
-console.log(penultimateWeek);
+    let penultimateWeek = subWeeks(startOfWeek(new Date(), {weekStartsOn: firstDayOfTheWeek}), 1);
+    console.log(penultimateWeek);
+    if (compareAsc(parseISO(planning_start_date), penultimateWeek) === 1) {
+        // penultimateWeek date is older than the beginning of the planning
+        penultimateWeek = startOfWeek(parseISO(planning_start_date), {weekStartsOn: firstDayOfTheWeek});
+    }
     socket.on('connect', function () {
         socket.emit('join', slug);
     });
