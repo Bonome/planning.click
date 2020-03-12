@@ -50,8 +50,8 @@
     <div class="week">
         <span class="cell week-row-header bold">W{getWeek(date)}</span>
         {#each displayDays as day, i}
-        <span class:today="{isSameDay(new Date(), date)}" class="cell day team-week-header long">{format(addDays(date, i), "cccccc dd/MM")}</span>
-        <span class:today="{isSameDay(new Date(), date)}" class="cell day team-week-header short">{format(addDays(date, i), " dd/MM")}</span>
+        <span class:today="{isSameDay(new Date(), addDays(date, i))}" class="cell day team-week-header long">{format(addDays(date, i), "cccccc dd/MM")}</span>
+        <span class:today="{isSameDay(new Date(), addDays(date, i))}" class="cell day team-week-header short">{format(addDays(date, i), " dd/MM")}</span>
         {/each}
     </div>
     {#each users as user, i}
