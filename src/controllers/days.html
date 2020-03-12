@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<!--
+Copyright (C) 2020 bonome
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<script context="module">
+    import { compareAsc, eachDayOfInterval, getDay } from 'date-fns';
+    
+    /**
+     * 
+     * @param {date} disabledStored last date of last processed
+     * @param {date} dateToDisplayed date to displayed
+     * @param {Array<number>} disabledDays array of week day number to disabled
+     * @returns {undefined}
+     */
+    export function disabling(disabledStored, dateToDisplayed, disabledDays, offs) {
+        console.log('dis1');
+        console.log(disabledStored);
+        console.log(dateToDisplayed);
+        console.log(disabledDays);
+        if (compareAsc(dateToDisplayed, disabledStored) === 1) {
+            // date of the disabled day stored in db is older than the last of the last week displayed
+            console.log('dis2');
+
+            var daysDisplayedToProcessed = eachDayOfInterval({
+                start: disabledStored,
+                end: dateToDisplayed
+            });
+
+            let disablingDays = {
+                dates: [],
+                lastProcessed: dateToDisplayed
+            }
+            for (let i = 0; i < daysDisplayedToProcessed.length; i++) {
+                let normalizeDate = new Date(daysDisplayedToProcessed[i].getTime() - (daysDisplayedToProcessed[i].getTimezoneOffset() * 60000));
+                if (disabledDays.indexOf(getDay(daysDisplayedToProcessed[i])) >= 0) {
+
+                    disablingDays.dates.push({date: normalizeDate, type: -1});
+                }
+                if (offs[normalizeDate.toISOString().substring(5)] != null) {
+                    disablingDays.dates.push({date: normalizeDate, type: -2, comment: offs[normalizeDate.toISOString().substring(5)]});
+                }
+                if (offs[normalizeDate.toISOString()] != null) {
+                    disablingDays.dates.push({date: normalizeDate, type: -2, comment: offs[normalizeDate.toISOString()]});
+                }
+            }
+            return disablingDays;
+        }
+    }
+</script>
