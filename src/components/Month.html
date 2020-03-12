@@ -56,7 +56,19 @@
         }
     };
     const loadNext = () => {
-        weeks = weeks.concat(Array(nbWeek));
+        // TODO uncomment and finish 
+//        let disablingDays = disabling(addWeeks(penultimateWeek, weeks.length-1), addWeeks(penultimateWeek, weeks.length-1+nbWeek), [0, 6], []);
+//        fetch('planning/' + slug + '/disablingdays.json', {
+//            method: 'post',
+//            headers: {
+//                'Accept': 'application/json',
+//                'Content-Type': 'application/json'
+//            },
+//            body: JSON.stringify(disablingDays)
+//        }).then(() => {
+            
+            weeks = weeks.concat(Array(nbWeek));
+//        });
     };
 </script>
 {#if isBefore(parseISO($planning_start_date), penultimateWeek)}

@@ -151,6 +151,7 @@ pre, code {
 .day.today {
     border-bottom: 6px solid red;
     margin-bottom: -3px;
+    font-family: JournalSansWebBold, HKGrotesk-Bold, sans-serif;
 }
 .processed_infos {
     padding: 0 0 5px 5px;

@@ -16,6 +16,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <script context="module">
     import { startOfWeek, eachDayOfInterval, getDay, differenceInDays } from 'date-fns';
+    import { disabling } from '../../controllers/days.html';
+    
     export async function preload(page) {
         const {slug} = page.params;
         
@@ -39,33 +41,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         }
         let lastDisplayedDate = addWeeks(endOfWeek(penultimateWeek, {weekStartsOn: firstDayOfTheWeek}), planning_number_week_displayed -1 );
         lastDisplayedDate = new Date(lastDisplayedDate.getTime() - (lastDisplayedDate.getTimezoneOffset() * 60000));
-        if (compareAsc(lastDisplayedDate, parseISO(data.week.disabledStored)) === 1) {
-            // date of the disabled day stored in db is older than the last of the last week displayed
-            //TODO : functionise the disabling process to apply it on loadMore
-
-            var daysDisplayedToProcessed = eachDayOfInterval({
-                start: parseISO(data.week.disabledStored),
-                end: lastDisplayedDate
-            });
-
-            let disablingDays = {
-                dates: [],
-                lastProcessed: lastDisplayedDate
-            }
-            for (let i = 0; i < daysDisplayedToProcessed.length; i++) {
-                let normalizeDate = new Date(daysDisplayedToProcessed[i].getTime() - (daysDisplayedToProcessed[i].getTimezoneOffset() * 60000));
-                if (disabledDays.indexOf(getDay(daysDisplayedToProcessed[i])) >= 0) {
-
-                    disablingDays.dates.push({date: normalizeDate, type: -1});
-                }
-                if (data.off[normalizeDate.toISOString().substring(5)] != null) {
-                    disablingDays.dates.push({date: normalizeDate, type: -2, comment: data.off[normalizeDate.toISOString().substring(5)]});
-                }
-                if (data.off[normalizeDate.toISOString()] != null) {
-                    disablingDays.dates.push({date: normalizeDate, type: -2, comment: data.off[normalizeDate.toISOString()]});
-                }
-            }
-            await this.fetch('planning/' + slug + '/disablingdays.json', {
+        
+        let disablingDays = disabling(parseISO(data.week.disabledStored),lastDisplayedDate, disabledDays, data.off);
+        await this.fetch('planning/' + slug + '/disablingdays.json', {
                 method: 'post',
                 headers: {
                     'Accept': 'application/json',
@@ -73,7 +51,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 },
                 body: JSON.stringify(disablingDays)
             });
-        }
         
         // Processed user data about on-call done and to do
         let lastDayOfLastWeek = subWeeks(endOfWeek(new Date(), {weekStartsOn: firstDayOfTheWeek}), 1);
