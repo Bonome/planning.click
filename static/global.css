@@ -148,6 +148,20 @@ pre, code {
     padding-bottom: 1%;
     background-color: mistyrose;
 }
+.processed_infos {
+    padding: 0 0 5px 5px;
+    display: inline-block;
+}
+.process-left-comin {
+    border-left-style: dashed;
+    border-left-color: orange;
+}
+.process-bottom-comin {
+    border-left-style: dashed;
+    border-left-color: orange;
+    border-bottom-style: dashed;
+    border-bottom-color: orange;
+}
 
 @media (max-width: 750px) {
 	.day {

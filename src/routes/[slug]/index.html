@@ -192,7 +192,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     const socket = io();
     let penultimateWeek = subWeeks(startOfWeek(new Date(), {weekStartsOn: firstDayOfTheWeek}), 1);
-    console.log(penultimateWeek);
     if (compareAsc(parseISO(planning_start_date), penultimateWeek) === 1) {
         // penultimateWeek date is older than the beginning of the planning
         penultimateWeek = startOfWeek(parseISO(planning_start_date), {weekStartsOn: firstDayOfTheWeek});
@@ -238,8 +237,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         {#each Object.keys(processed.oncalled.users) as user_id}
         <div>
             <b>{users.find(x=> x.id == user_id).name}</b>: 
-            <p>past: &nbsp;&nbsp;&nbsp;{processed.oncalled.users[user_id].past.done} / {Math.round(processed.oncalled.users[user_id].past.todo * 100) / 100}</p>
-            <p>comin: {processed.oncalled.users[user_id].future.done} / {Math.round(processed.oncalled.users[user_id].future.todo * 100) / 100}</p>
+            <p>
+                <span class="processed_infos">past: &nbsp;&nbsp;&nbsp;{processed.oncalled.users[user_id].past.done} / {Math.round(processed.oncalled.users[user_id].past.todo * 10) / 10}</span>
+            </p>
+            <p>
+                <span class="processed_infos process-bottom-comin">comin: {processed.oncalled.users[user_id].future.done} / {Math.round(processed.oncalled.users[user_id].future.todo * 10) / 10}</span>
+            </p>
         </div>
         {/each}
     </div>
@@ -258,6 +261,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     .side-infos {
         position: fixed;
         left: 10px;
+        width: 15%;
     }
     .processed {
         margin-top: 20px;

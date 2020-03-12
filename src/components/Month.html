@@ -20,7 +20,6 @@
     let observer;
 
     onMount(() => {
-	    console.log(penultimateWeek);
         observer = new IntersectionObserver(loadMore, {
             rootMargin: '-60px 0px 0px 0px',
             threshold: 1,

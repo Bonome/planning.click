@@ -2,7 +2,7 @@
     import { getWeek, format, addDays, isSameWeek } from 'date-fns';
     
     import Week from './Week.html';
-    
+    import { number_week_displayed } from '../store.js';
     export let users;
     export let firstDayOfTheWeek;
     export let days;
@@ -43,7 +43,10 @@
     }
 
 </script>
-<div class='team-week' class:toweek="{isSameWeek(new Date(), date)}">
+<div class='team-week' 
+     class:toweek="{isSameWeek(new Date(), date)}"
+     class:process-left-comin="{getWeek(date) >= getWeek(new Date()) && getWeek(date) < getWeek(new Date())+$number_week_displayed-2}"
+     class:process-bottom-comin="{getWeek(date) == getWeek(new Date())+$number_week_displayed-2}">
     <div class="week">
         <span class="cell week-row-header bold">W{getWeek(date)}</span>
         {#each displayDays as day, i}
