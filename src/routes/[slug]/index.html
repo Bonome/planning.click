@@ -43,7 +43,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         lastDisplayedDate = new Date(lastDisplayedDate.getTime() - (lastDisplayedDate.getTimezoneOffset() * 60000));
         
         let disablingDays = disabling(parseISO(data.week.disabledStored),lastDisplayedDate, disabledDays, data.off);
-        await this.fetch('planning/' + slug + '/disablingdays.json', {
+        if(disablingDays != null) {
+            await this.fetch('planning/' + slug + '/disablingdays.json', {
                 method: 'post',
                 headers: {
                     'Accept': 'application/json',
@@ -51,6 +52,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 },
                 body: JSON.stringify(disablingDays)
             });
+        }
         
         // Processed user data about on-call done and to do
         let lastDayOfLastWeek = subWeeks(endOfWeek(new Date(), {weekStartsOn: firstDayOfTheWeek}), 1);
