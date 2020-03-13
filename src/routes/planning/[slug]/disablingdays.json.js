@@ -17,6 +17,7 @@ export function post(req, res, next) {
             const db = client.db(engine.dbName);
             console.log('disabling data');
             console.log(data);
+            let response = [];
             for (let i = 0; i < data.length; i++) {
                 let dataset = {
                     type: data[i].type,
@@ -24,7 +25,7 @@ export function post(req, res, next) {
                 if(data[i].comment != null) {
                     dataset.comment = data[i].comment
                 }
-                await db.collection('userday').updateOne(
+                let res = await db.collection('userday').updateOne(
                     {
                         slug: slug,
                         date: new Date(data[i].date),
@@ -37,6 +38,16 @@ export function post(req, res, next) {
                         upsert: true
                     }
                 );
+                if(res.upsertedId != null) {
+                    let day = {
+                        slug: slug,
+                        date: new Date(data[i].date),
+                        user: null,
+                        type: data[i].type,
+                        _id: res.upsertedId._id
+                    };
+                    response.push(day);
+                }
             }
             await db.collection('plannings').updateOne(
                 {
@@ -52,7 +63,7 @@ export function post(req, res, next) {
                 'Content-Type': 'application/json'
             });
 
-            res.end(JSON.stringify(true));
+            res.end(JSON.stringify(response));
 
         } catch (err) {
             console.log(err.stack);

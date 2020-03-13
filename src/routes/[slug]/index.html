@@ -27,11 +27,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         let users = data.users;
         let days = data.week.days;
         let firstDayOfTheWeek = data.week.dayOne;
-        let disabledDays = data.week.disabled;
+        let disabled_days_db = data.week.disabled;
+        let off_db = data.off;
         let events = data.events;
         let processed = data.processed;
         let planning_number_week_displayed = data.number_week_displayed;
         let planning_start_date_db = data.start_date
+        let last_disabled_date_processed_db = parseISO(data.week.disabledStored);
 
         // Storing disabled days 
         let penultimateWeek = subWeeks(startOfWeek(new Date(), {weekStartsOn: firstDayOfTheWeek}), 1);
@@ -42,7 +44,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         let lastDisplayedDate = addWeeks(endOfWeek(penultimateWeek, {weekStartsOn: firstDayOfTheWeek}), planning_number_week_displayed -1 );
         lastDisplayedDate = new Date(lastDisplayedDate.getTime() - (lastDisplayedDate.getTimezoneOffset() * 60000));
         
-        let disablingDays = disabling(parseISO(data.week.disabledStored),lastDisplayedDate, disabledDays, data.off);
+        let disablingDays = disabling(last_disabled_date_processed_db,lastDisplayedDate, disabled_days_db, off_db);
         if(disablingDays != null) {
             await this.fetch('planning/' + slug + '/disablingdays.json', {
                 method: 'post',
@@ -141,7 +143,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             }
         }
 
-        return {users, days, firstDayOfTheWeek, dataDays, slug, events, processed, planning_number_week_displayed, planning_start_date_db};
+        return {users, days, firstDayOfTheWeek, dataDays, slug, events, processed, planning_number_week_displayed, planning_start_date_db, last_disabled_date_processed_db, disabled_days_db, off_db};
     }
 </script>
 <script>
@@ -149,25 +151,30 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     import io from 'socket.io-client';
     import { endOfWeek, subWeeks, addWeeks, parseISO, compareAsc } from 'date-fns';
 
-    import { selected_event, number_week_displayed, planning_start_date } from '../../store.js';
+    import { selected_event, number_week_displayed, planning_start_date, last_disabled_date_processed, disabled_days, off } from '../../store.js';
     import { conf } from '../../conf.js';
     import Month from '../../components/Month.html';
 
     export let slug;
     export let days = [];
     export let firstDayOfTheWeek;
-//    export let disabledDays = [];
     export let users = [];
     export let dataDays = [];
     export let events;
     export let processed;
     export let planning_number_week_displayed;
     export let planning_start_date_db;
+    export let last_disabled_date_processed_db;
+    export let disabled_days_db;
+    export let off_db;
     let defaultType = 1;//oncalled
 
     $selected_event = defaultType;
     $number_week_displayed = planning_number_week_displayed;
     $planning_start_date = planning_start_date_db;
+    $last_disabled_date_processed = last_disabled_date_processed_db;
+    $disabled_days = disabled_days_db;
+    $off = off_db;
 
     const socket = io();
     let penultimateWeek = subWeeks(startOfWeek(new Date(), {weekStartsOn: firstDayOfTheWeek}), 1);

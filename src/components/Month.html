@@ -4,7 +4,8 @@
     import { startOfWeek, subWeeks, addWeeks, parseISO, isBefore, isSameWeek } from 'date-fns';
 
     import TeamWeek from './TeamWeek.html';
-    import { number_week_displayed, planning_start_date } from '../store.js';
+    import { disabling } from '../helpers/days.html';
+    import { number_week_displayed, planning_start_date, last_disabled_date_processed, disabled_days, off } from '../store.js';
 
     export let users;
     export let firstDayOfTheWeek;
@@ -34,13 +35,13 @@
             observer.observe(targetPrevious);
         }
     });
-    const loadMore = function(entries) {
+    const loadMore = function (entries) {
         entries.forEach(entry => {
             // target is intersecting the viewport
             if (entry.isIntersecting) {
-                if(entry.target.className.indexOf('load_previous') >= 0) {
+                if (entry.target.className.indexOf('load_previous') >= 0) {
                     loadPrevious();
-                } else if(entry.target.className.indexOf('load_next') >= 0) {
+                } else if (entry.target.className.indexOf('load_next') >= 0) {
                     loadNext();
                 }
             }
@@ -56,25 +57,40 @@
         }
     };
     const loadNext = () => {
-        // TODO uncomment and finish 
-//        let disablingDays = disabling(addWeeks(penultimateWeek, weeks.length-1), addWeeks(penultimateWeek, weeks.length-1+nbWeek), [0, 6], []);
-//        fetch('planning/' + slug + '/disablingdays.json', {
-//            method: 'post',
-//            headers: {
-//                'Accept': 'application/json',
-//                'Content-Type': 'application/json'
-//            },
-//            body: JSON.stringify(disablingDays)
-//        }).then(() => {
-            
+        let disablingDays = disabling($last_disabled_date_processed, addWeeks(penultimateWeek, weeks.length + nbWeek), $disabled_days, $off);
+        if (disablingDays != null) {
+            console.log('fetch');
+            fetch('planning/' + slug + '/disablingdays.json', {
+                method: 'post',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(disablingDays)
+            })
+                    .then(response => response.json())
+                    .then((response) => {
+                        for (let i = 0; i < response.length; i++) {
+                            let day = response[i];
+                            if (dataDays[day.date] == null) {
+                                dataDays[day.date] = {};
+                            }
+                            dataDays[day.date][day.user] = {
+                                type: day.type,
+                                _id: day._id
+                            }
+                        }
+                        weeks = weeks.concat(Array(nbWeek));
+                    });
+        } else {
             weeks = weeks.concat(Array(nbWeek));
-//        });
+        }
     };
 </script>
 {#if isBefore(parseISO($planning_start_date), penultimateWeek)}
-    <div class="load_more load_previous">
-        <span on:click={loadPrevious}>Load previous week</span>
-    </div>
+<div class="load_more load_previous">
+    <span on:click={loadPrevious}>Load previous week</span>
+</div>
 {/if}
 {#each weeks as week, i}
 <TeamWeek {users} {firstDayOfTheWeek} {days} {slug} {dataDays} {socket} date='{addWeeks(penultimateWeek, i)}'></TeamWeek>
