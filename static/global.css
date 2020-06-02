@@ -139,6 +139,9 @@ pre, code {
 .day-evt-7 {
     background: linear-gradient(to right, royalblue, royalblue 47%, indianred 55%, indianred);
 }
+.day-evt-8 {
+    background: darkviolet;
+}
 .team-week {
     line-height: 0.5;
     padding-left: 1%;
