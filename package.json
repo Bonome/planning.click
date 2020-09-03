@@ -46,7 +46,7 @@
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-svelte": "^5.0.1",
     "rollup-plugin-terser": "^5.2.0",
-    "sapper": "^0.27.10",
+    "sapper": "^0.27.11",
     "svelte": "^3.19.1",
     "svelte-i18n": "^2.3.1"
   }
