@@ -1,5 +1,5 @@
 <script>
-    import { getWeek, format, addDays, isSameWeek, isSameDay } from 'date-fns';
+    import { getWeek, format, addDays, isSameWeek, isSameDay, isAfter, isBefore, parseISO } from 'date-fns';
     
     import Week from './Week.html';
     import { number_week_displayed } from '../store.js';
@@ -45,17 +45,19 @@
 </script>
 <div class='team-week' 
      class:toweek="{isSameWeek(new Date(), date)}"
-     class:process-left-comin="{getWeek(date) >= getWeek(new Date()) && getWeek(date) < getWeek(new Date())+$number_week_displayed-2}"
-     class:process-bottom-comin="{getWeek(date) == getWeek(new Date())+$number_week_displayed-2}">
+     class:process-left-comin="{getWeek(date, {weekStartsOn: 1, firstWeekContainsDate: 4}) >= getWeek(new Date(), {weekStartsOn: 1, firstWeekContainsDate: 4}) && getWeek(date, {weekStartsOn: 1, firstWeekContainsDate: 4}) < getWeek(new Date(), {weekStartsOn: 1, firstWeekContainsDate: 4})+$number_week_displayed-2}"
+     class:process-bottom-comin="{getWeek(date, {weekStartsOn: 1, firstWeekContainsDate: 4}) == getWeek(new Date(), {weekStartsOn: 1, firstWeekContainsDate: 4})+$number_week_displayed-2}">
     <div class="week">
-        <span class="cell week-row-header bold">W{getWeek(date)}</span>
+        <span class="cell week-row-header bold">W{getWeek(date, {weekStartsOn: 1, firstWeekContainsDate: 4})}</span>
         {#each displayDays as day, i}
         <span class:today="{isSameDay(new Date(), addDays(date, i))}" class="cell day team-week-header long">{format(addDays(date, i), "cccccc dd/MM")}</span>
         <span class:today="{isSameDay(new Date(), addDays(date, i))}" class="cell day team-week-header short">{format(addDays(date, i), " dd/MM")}</span>
         {/each}
     </div>
     {#each users as user, i}
+    {#if isBefore(parseISO(user.from_date), addDays(date, i)) && (user.to_date == null || isAfter(parseISO(user.to_date), addDays(date, i)))}
     <Week {user} {displayDays} {date} {slug} {dataDays} {socket}></Week>
+    {/if}
     {/each}
 </div>
 
