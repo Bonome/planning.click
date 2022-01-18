@@ -44,7 +44,7 @@
         }
         socket.emit("day", event);
     };
-    
+
     const convertDate = function(dayIndex){
         if(days[dayIndex].utcdate == null){
             days[dayIndex].daydate = addDays(date, dayIndex);
@@ -52,7 +52,7 @@
         }
         return days[dayIndex].utcdate;
     }
-    
+
     const displayClass = function(day) {
         if(day == null) {
             return '0';

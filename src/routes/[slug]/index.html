@@ -27,6 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         let users = data.users;
         let days = data.week.days;
         let firstDayOfTheWeek = data.week.dayOne;
+        let first_week_contains_date_db = 4;
         let disabled_days_db = data.week.disabled;
         let off_db = data.off;
         let events = data.events;
@@ -34,6 +35,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         let planning_number_week_displayed = data.number_week_displayed;
         let planning_start_date_db = data.start_date
         let last_disabled_date_processed_db = parseISO(data.week.disabledStored);
+
+        if (data.week.firstWeekContainsDate != null) {
+            first_week_contains_date_db = data.week.firstWeekContainsDate;
+        }
 
         // Storing disabled days 
         let penultimateWeek = subWeeks(startOfWeek(new Date(), {weekStartsOn: firstDayOfTheWeek}), 1);
@@ -143,7 +148,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             }
         }
 
-        return {users, days, firstDayOfTheWeek, dataDays, slug, events, processed, planning_number_week_displayed, planning_start_date_db, last_disabled_date_processed_db, disabled_days_db, off_db};
+        return {users, days, firstDayOfTheWeek, dataDays, slug, events, processed, planning_number_week_displayed, planning_start_date_db, last_disabled_date_processed_db, disabled_days_db, off_db, first_week_contains_date_db};
     }
 </script>
 <script>
@@ -151,7 +156,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     import io from 'socket.io-client';
     import { endOfWeek, subWeeks, addWeeks, parseISO, compareAsc } from 'date-fns';
 
-    import { selected_event, number_week_displayed, planning_start_date, last_disabled_date_processed, disabled_days, off } from '../../store.js';
+    import { selected_event, number_week_displayed, planning_start_date, last_disabled_date_processed, disabled_days, off, firstWeekContainsDate } from '../../store.js';
     import { conf } from '../../conf.js';
     import Month from '../../components/Month.html';
 
@@ -167,6 +172,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     export let last_disabled_date_processed_db;
     export let disabled_days_db;
     export let off_db;
+    export let first_week_contains_date_db;
     let defaultType = 1;//oncalled
 
     $selected_event = defaultType;
@@ -175,6 +181,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     $last_disabled_date_processed = last_disabled_date_processed_db;
     $disabled_days = disabled_days_db;
     $off = off_db;
+    $firstWeekContainsDate = first_week_contains_date_db;
 
     const socket = io();
     let penultimateWeek = subWeeks(startOfWeek(new Date(), {weekStartsOn: firstDayOfTheWeek}), 1);
@@ -252,6 +259,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     .processed {
         margin-top: 20px;
         line-height: 0.2;
+        display: none;
     }
     @media (max-width: 1200px) {
         .side-infos {

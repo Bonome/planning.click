@@ -11,4 +11,6 @@ export const last_disabled_date_processed = writable(0);
 export const disabled_days = writable(0);
 
 export const off = writable(0);
+
+export const firstWeekContainsDate = writable(0);
 //export const slug = 

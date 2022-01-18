@@ -5,7 +5,6 @@ import * as sapper from '@sapper/server';
 const {json} = require('body-parser');
 import http from 'http';
 import {socket} from './socket';
-require('dotenv').config();
 
 const {PORT, NODE_ENV} = process.env;
 const dev = NODE_ENV === 'development';
