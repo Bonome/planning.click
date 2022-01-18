@@ -110,6 +110,9 @@ pre, code {
 .events-selection .day {
     width: 30%;
 }
+.text-grey {
+    color: #aaa;
+}
 .cell {
 }
 .day-evt--2 {

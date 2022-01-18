@@ -1,5 +1,5 @@
 <script>
-    import { getWeek, format, addDays, isSameWeek, isSameDay, isAfter, isBefore, parseISO } from 'date-fns';
+    import { getWeek, format, addDays, isSameWeek, isSameDay, isAfter, isBefore, parseISO, getYear } from 'date-fns';
     
     import Week from './Week.html';
     import { number_week_displayed, firstWeekContainsDate } from '../store.js';
@@ -48,7 +48,7 @@
      class:process-left-comin="{getWeek(date, {firstWeekContainsDate: $firstWeekContainsDate}) >= getWeek(new Date(), {firstWeekContainsDate: $firstWeekContainsDate}) && getWeek(date, {firstWeekContainsDate: $firstWeekContainsDate}) < getWeek(new Date(), {firstWeekContainsDate: $firstWeekContainsDate})+$number_week_displayed-2}"
      class:process-bottom-comin="{getWeek(date, {firstWeekContainsDate: $firstWeekContainsDate}) == getWeek(new Date(), {firstWeekContainsDate: $firstWeekContainsDate})+$number_week_displayed-2}">
     <div class="week">
-        <span class="cell week-row-header bold">W{getWeek(date, {firstWeekContainsDate: $firstWeekContainsDate})}</span>
+        <span class="cell week-row-header bold">W{getWeek(date, {firstWeekContainsDate: $firstWeekContainsDate})}<span class="text-grey m-left-10">{getYear(date)}</span></span>
         {#each displayDays as day, i}
         <span class:today="{isSameDay(new Date(), addDays(date, i))}" class="cell day team-week-header long">{format(addDays(date, i), "cccccc dd/MM")}</span>
         <span class:today="{isSameDay(new Date(), addDays(date, i))}" class="cell day team-week-header short">{format(addDays(date, i), " dd/MM")}</span>
@@ -83,6 +83,9 @@
     }
     .team-week {
         margin-bottom: 20px;
+    }
+    .m-left-10 {
+        margin-left: 10px;
     }
     @media (max-width: 750px) {
         .team-week-header.long{
