@@ -89,6 +89,9 @@ b, .bold {
     font-family: JournalSansWebBold, HKGrotesk-Bold, sans-serif;
     font-weight: normal;
 }
+.pointer {
+    cursor: pointer;
+}
 
 pre, code {
 	font-family: JournalSansWebBook, HKGrotesk-Medium, menlo, inconsolata, monospace !important;
@@ -109,6 +112,7 @@ pre, code {
 }
 .events-selection .day {
     width: 30%;
+    vertical-align: middle;
 }
 .text-grey {
     color: #aaa;
