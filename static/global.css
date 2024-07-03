@@ -118,32 +118,69 @@ pre, code {
 .day-evt--2 {
     background-color: #bebeca;/*d1d1dc*/
 }
+/* basic-work */
 .day-evt--1 {
     background-color: #bebeca;
 }
+/* remote */
 .day-evt-1 {
     background-color: indianred;
 }
+/* school */
 .day-evt-2 {
     background-color: palegoldenrod;
 }
+/* absence */
 .day-evt-3 {
     background-color: cadetblue;
 }
+/* vacation */
 .day-evt-4 {
     background-color: royalblue;
 }
+/* vacation / basic-work */
 .day-evt-5 {
     background: linear-gradient(to right, royalblue, royalblue 47%, #d1dcd6 55%, #d1dcd6);
 }
+/* basic-work / vacation */
 .day-evt-6 {
     background: linear-gradient(to right, #d1dcd6, #d1dcd6 47%, royalblue 55%, royalblue);
 }
+/* vacation /remote */
 .day-evt-7 {
     background: linear-gradient(to right, royalblue, royalblue 47%, indianred 55%, indianred);
 }
+/* vacation-request */
 .day-evt-8 {
     background: darkviolet;
+}
+/* remote / vacation */
+.day-evt-9 {
+    background: linear-gradient(to right, indianred, indianred 47%, royalblue 55%, royalblue);
+}
+/* absence / basic-work */
+.day-evt-10 {
+    background: linear-gradient(to right, cadetblue, cadetblue 47%, #d1dcd6 55%, #d1dcd6);
+}
+/* basic-work / absence */
+.day-evt-11 {
+    background: linear-gradient(to right, #d1dcd6, #d1dcd6 47%, cadetblue 55%, cadetblue);
+}
+/* absence / remote */
+.day-evt-12 {
+    background: linear-gradient(to right, cadetblue, cadetblue 47%, indianred 55%, indianred);
+}
+/* remote / absence */
+.day-evt-13 {
+    background: linear-gradient(to right, indianred, indianred 47%, cadetblue 55%, cadetblue);
+}
+/* absence / vacation */
+.day-evt-14 {
+    background: linear-gradient(to right, cadetblue, cadetblue 47%, royalblue 55%, royalblue);
+}
+/* vacation / absence */
+.day-evt-15 {
+    background: linear-gradient(to right, royalblue, royalblue 47%, cadetblue 55%, cadetblue);
 }
 .team-week {
     line-height: 0.5;
