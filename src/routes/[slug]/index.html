@@ -185,10 +185,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     $firstWeekContainsDate = first_week_contains_date_db;
 
     onMount(() => {
+        if (sessionStorage.getItem('openEvents') != null) {
+            openEvents = JSON.parse(sessionStorage.getItem('openEvents'));
+        }
         for (let idxevt = 0; idxevt < events.length; idxevt++) {
             if (events[idxevt].depends != null && events[idxevt].depends.length > 0) {
                 for (let idxsub = 0; idxsub < events[idxevt].depends.length; idxsub++) {
-                    openEvents[events[idxevt].depends[idxsub]] = false;
+                    if (openEvents[events[idxevt].depends[idxsub]] == null) {
+                        openEvents[events[idxevt].depends[idxsub]] = false;
+                    }
                 }
             }
         }
@@ -220,6 +225,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     const toggleEvents = event_type => () => {
         openEvents[event_type] = !openEvents[event_type];
+        sessionStorage.setItem('openEvents', JSON.stringify(openEvents));
     }
 </script>
 
